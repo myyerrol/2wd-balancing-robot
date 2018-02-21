@@ -1,3 +1,7 @@
+#include <Wire.h>
+// #include <Adafruit_GFX.h>
+// #include <Adafruit_SSD1306.h>
+
 #define PIN_LED              13
 #define PIN_BUZZER           A0
 #define PIN_ECHO             A1
@@ -17,11 +21,121 @@
 #define PIN_MOTOR_IN3        7
 #define PIN_MOTOR_IN4        8
 #define PIN_MOTOR_ENA        9
-#define PIN_MOTOR_ENB       10
-#define TIMEOUT             30000
+#define PIN_MOTOR_ENB        10
+#define MOTOR_A              0
+#define MOTOR_B              1
+#define TIMEOUT              30000
 
+enum MotorState
+{
+    MOTOR_FRONT,
+    MOTOR_BACK,
+    MOTOR_STOP
+};
+
+enum RobotState
+{
+    ROBOT_FRONT,
+    ROBOT_BACK,
+    ROBOT_LEFT,
+    ROBOT_RIGHT,
+    ROBOT_STOP
+};
+
+// Adafruit_SSD1306 g_oled(-1);
+
+void initMotors(void);
+void initOLED(void);
+void setMotorDirection(uint8_t motor, MotorState state);
+void setMotorSpeed(uint8_t motor, uint8_t speed);
 void playBuzzerSound(uint8_t freq, uint8_t time);
 float getUltrasonicDistance(void);
+
+void initMotors(void)
+{
+    pinMode(PIN_MOTOR_IN1, OUTPUT);
+    pinMode(PIN_MOTOR_IN2, OUTPUT);
+    pinMode(PIN_MOTOR_IN3, OUTPUT);
+    pinMode(PIN_MOTOR_IN4, OUTPUT);
+    pinMode(PIN_MOTOR_ENA, OUTPUT);
+    pinMode(PIN_MOTOR_ENB, OUTPUT);
+
+    setMotorDirection(MOTOR_A, MOTOR_STOP);
+    setMotorDirection(MOTOR_B, MOTOR_STOP);
+}
+
+// void initOLED(void)
+// {
+//     g_oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+//     g_oled.clearDisplay();
+//     g_oled.setTextSize(4);
+//     g_oled.setTextColor(WHITE);
+//     g_oled.setCursor(30, 20);
+//     g_oled.print("SBR");
+//     g_oled.display();
+// }
+
+void setMotorDirection(uint8_t motor, MotorState state)
+{
+    if (state == MOTOR_FRONT) {
+        if (motor == MOTOR_A) {
+            digitalWrite(PIN_MOTOR_IN1, HIGH);
+            digitalWrite(PIN_MOTOR_IN2, LOW);
+        }
+        else if (motor == MOTOR_B) {
+            digitalWrite(PIN_MOTOR_IN3, LOW);
+            digitalWrite(PIN_MOTOR_IN4, HIGH);
+        }
+        else {
+            return;
+        }
+    }
+    else if (state == MOTOR_BACK) {
+        if (motor == MOTOR_A) {
+            digitalWrite(PIN_MOTOR_IN1, LOW);
+            digitalWrite(PIN_MOTOR_IN2, HIGH);
+        }
+        else if (motor == MOTOR_B) {
+            digitalWrite(PIN_MOTOR_IN3, HIGH);
+            digitalWrite(PIN_MOTOR_IN4, LOW);
+        }
+        else {
+            return;
+        }
+    }
+    else if (state == MOTOR_STOP) {
+        if (motor == MOTOR_A) {
+            digitalWrite(PIN_MOTOR_IN1, LOW);
+            digitalWrite(PIN_MOTOR_IN2, LOW);
+        }
+        else if (motor == MOTOR_B) {
+            digitalWrite(PIN_MOTOR_IN3, LOW);
+            digitalWrite(PIN_MOTOR_IN4, LOW);
+        }
+        else {
+            return;
+        }
+    }
+    else {
+        return;
+    }
+}
+
+void setMotorSpeed(uint8_t motor, uint8_t speed)
+{
+    if (speed >= 0 && speed <= 100) {
+        int pwm = map(speed, 0, 100, 0, 255);
+        if (motor == MOTOR_A) {
+            analogWrite(PIN_MOTOR_ENA, pwm);
+        }
+        else {
+            analogWrite(PIN_MOTOR_ENB, pwm);
+        }
+    }
+    else {
+        return;
+    }
+}
 
 void playBuzzerSound(uint8_t freq, uint8_t time)
 {
@@ -59,13 +173,10 @@ void setup()
     pinMode(PIN_TRIG, OUTPUT);
     pinMode(PIN_ECHO, INPUT);
 
-    digitalWrite(PIN_LED, HIGH);
-
-    delay(1000);
-
-    digitalWrite(PIN_LED, LOW);
-
     playBuzzerSound(50, 500);
+
+    initMotors();
+    // initOLED();
 
     Serial.begin(115200);
 }
@@ -83,7 +194,6 @@ void loop()
         }
         if (distance > 0 && distance <= 5) {
             digitalWrite(PIN_LED, HIGH);
-            //playBuzzerSound(100, 500);
         }
         else
         {
