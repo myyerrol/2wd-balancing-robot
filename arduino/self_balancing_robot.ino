@@ -1,76 +1,140 @@
 #include <Wire.h>
-// #include <Adafruit_GFX.h>
-// #include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#include "self_balancing_robot.h"
 
-#define PIN_LED              13
-#define PIN_BUZZER           A0
-#define PIN_ECHO             A1
-#define PIN_TRIG             A2
-#define PIN_IIC_SCL          A5
-#define PIN_IIC_SDA          A4
-#define PIN_SPI_MOSI         11
-#define PIN_SPI_MISO         12
-#define PIN_RXD              0
-#define PIN_TXD              1
-#define PIN_ENCODER_LEFT_C1  2
-#define PIN_ENCODER_LEFT_C2  4
-#define PIN_ENCODER_RIGHT_C1 3
-#define PIN_ENCODER_RIGHT_C2 A3
-#define PIN_MOTOR_IN1        5
-#define PIN_MOTOR_IN2        6
-#define PIN_MOTOR_IN3        7
-#define PIN_MOTOR_IN4        8
-#define PIN_MOTOR_ENA        9
-#define PIN_MOTOR_ENB        10
-#define MOTOR_A              0
-#define MOTOR_B              1
-#define TIMEOUT_SONIC        30000
-#define TIMEOUT_IIC          1000
+// PID cycle debug, printing time information after opening.
+#define DEBUG_PID_CYCLE
+// PID parameter debug, saving dynamic memory by replacing variable values with
+// macros after closing.
+#define DEBUG_PID_PARAMETER
+// Speed Loop Enable.
+#define ENABLE_SPEED_LOOP
+// Sonic Sensor Enable.
+#define ENABLE_SONIC
+// Motor Enable.
+#define ENABLE_MOTOR
+// Output IMU Data.
+#define OUTPUT_IMU
+// Output Sonic Sensor Data.
+#define OUTPUT_SONIC
 
-enum MotorState
-{
-    MOTOR_FRONT,
-    MOTOR_BACK,
-    MOTOR_STOP
-};
+/*****************************************************************************/
 
-enum RobotState
-{
-    ROBOT_FRONT,
-    ROBOT_BACK,
-    ROBOT_LEFT,
-    ROBOT_RIGHT,
-    ROBOT_STOP
-};
+// OLED Global Variables.
+Adafruit_SSD1306 g_oled(-1);
+const uint8_t PROGMEM g_info_temp[]  = {"Temperature:"};
+const uint8_t PROGMEM g_info_check[] = {};
 
-// Adafruit_SSD1306 g_oled(-1);
-
-// IMU Variables.
+// IMU Global Variables.
 const uint8_t IMU_ADDRESS = 0x70;
 double g_acc_x, g_acc_y, g_acc_z;
 double g_gyro_y, g_gyro_z;
-double g_comp_y_angle, g_gyro_y_angle;
+double g_calc_y_angle, g_gyro_y_angle;
 int16_t g_temp;
-uint32_t g_imu_timer;
+uint32_t g_timer_imu;
 static uint8_t g_iic_buffer[8];
 
-void initEncoders(void);
-void initMotors(void);
-void initIMU(void);
-void initOLED(void);
-void setMotorDirection(uint8_t motor, MotorState state);
-void setMotorSpeed(uint8_t motor, uint8_t speed);
-void playBuzzerSound(uint8_t freq, uint8_t time);
-uint8_t readDataFromIIC(uint8_t address, uint8_t *data, uint8_t bytes);
-uint8_t writeDataToIIC(uint8_t address, uint8_t data, bool stop_flag);
-uint8_t writeDataToIIC(uint8_t address, uint8_t *data, uint8_t length,
-                       bool stop_flag);
-float getUltrasonicDistance(void);
+// Encoder Global Variables.
+volatile int32_t  g_count_encoder_a, g_count_encoder_b;
+volatile uint32_t g_timer_encoder_a, g_timer_encoder_b;
+
+// PID Global Variables.
+// Angle Loop Variables.
+#ifdef DEBUG_PID_PARAMETER
+double  g_p_angle = 0, g_i_angle = 0, g_d_angle = 0;
+#else
+#define g_p_angle 0
+#define g_i_angle 0
+#define g_d_angle 0
+#endif
+double  g_angle_setpoint = 0, g_angle_output, g_angle_integral;
+uint32_t g_timer_angle_pid;
+
+// Speed Loop Variables.
+#ifdef DEBUG_PID_PARAMETER
+double  g_p_speed = 0, g_i_speed = 0;
+#else
+#define g_p_speed 0
+#define g_i_speed 0
+#endif
+double  g_speed_setpoint = 0, g_speed_output, g_speed_integral;
+uint32_t g_timer_speed_pid;
+
+// Turning Angle Variables.
+#ifdef DEBUG_PID_PARAMETER
+double  g_p_turn = 0, g_i_turn = 0;
+#else
+#define g_p_turn 0
+#define g_i_turn 0
+#endif
+double  g_turn_integral = 0, g_turn_output;
+
+// Other Global Variables.
+RobotState g_robot_state;
+uint32_t g_timer_sonic;
+
+/*****************************************************************************/
+
+void calculateAnglePID(void)
+{
+    double output_a, output_b;
+
+    if (micros() - g_timer_angle_pid > 10000) {
+#ifdef DEBUG_PID_CYCLE
+        Serial.print("A.");
+        Serial.print(millis());
+#endif
+        // Calculate angle.
+        double angle_error = g_calc_y_angle - g_angle_setpoint;
+        g_angle_integral += angle_error;
+        g_angle_output = g_p_angle * angle_error + g_i_angle * g_angle_integral;
+
+        // Calculate turn.
+        if ()
+    }
+}
+
+void calculateSpeedPID(void)
+{
+
+}
+
+void countEncoderA(void)
+{
+    if (digitalRead(PIN_ENCODER_A_C2) == HIGH) {
+        g_count_encoder_a++;
+    }
+    else if (digitalRead(PIN_ENCODER_A_C2 == LOW)) {
+        g_count_encoder_a--;
+    }
+    else {
+        return;
+    }
+}
+
+void countEncoderB(void)
+{
+    if (digitalRead(PIN_ENCODER_B_C2) == HIGH) {
+        g_count_encoder_b++;
+    }
+    else if (digitalRead(PIN_ENCODER_B_C2 == LOW)) {
+        g_count_encoder_b--;
+    }
+    else {
+        return;
+    }
+}
 
 void initEncoders(void)
 {
-    attachInterrupt(0, ENCODER_L, FALLING);
-    attachInterrupt(1, ENCODER_R, FALLING);
+    pinMode(PIN_ENCODER_A_C1, INPUT);
+    pinMode(PIN_ENCODER_A_C2, INPUT);
+    pinMode(PIN_ENCODER_B_C1, INPUT);
+    pinMode(PIN_ENCODER_B_C2, INPUT);
+
+    attachInterrupt(digitalPinToInterrupt(2), countEncoderA, FALLING);
+    attachInterrupt(digitalPinToInterrupt(3), countEncoderB, FALLING);
 }
 
 void initMotors(void)
@@ -129,21 +193,21 @@ void initIMU(void)
         * RAD_TO_DEG;
 
     g_gyro_y_angle = pitch;
-    g_comp_y_angle = pitch;
+    g_calc_y_angle = pitch;
 
-    g_imu_timer = micros();
+    g_timer_imu = micros();
 }
 
-// void initOLED(void)
-// {
-//     g_oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-//     g_oled.clearDisplay();
-//     g_oled.setTextSize(4);
-//     g_oled.setTextColor(WHITE);
-//     g_oled.setCursor(30, 20);
-//     g_oled.print("SBR");
-//     g_oled.display();
-// }
+void initOLED(void)
+{
+    g_oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    g_oled.clearDisplay();
+    g_oled.setTextSize(4);
+    g_oled.setTextColor(WHITE);
+    g_oled.setCursor(30, 20);
+    g_oled.print("SBR");
+    g_oled.display();
+}
 
 void setMotorDirection(uint8_t motor, MotorState state)
 {
@@ -194,7 +258,7 @@ void setMotorDirection(uint8_t motor, MotorState state)
 void setMotorSpeed(uint8_t motor, uint8_t speed)
 {
     if (speed >= 0 && speed <= 100) {
-        int pwm = map(speed, 0, 100, 0, 255);
+        uint8_t pwm = map(speed, 0, 100, 0, 255);
         if (motor == MOTOR_A) {
             analogWrite(PIN_MOTOR_ENA, pwm);
         }
@@ -205,6 +269,27 @@ void setMotorSpeed(uint8_t motor, uint8_t speed)
     else {
         return;
     }
+}
+
+void showSelfCheckingInfo(void)
+{
+    g_oled.clearDisplay();
+    g_oled.setTextSize(1);
+    g_oled.setCursor(0, 0);
+
+    for (uint8_t i = 0; i < strlen(g_info_check); i++)
+    {
+        uint8_t byte =  pgm_read_byte_near(g_info_check + i);
+        g_oled.print(byte);
+    }
+    for (uint8_t i = 0; i < strlen(g_info_temp); i++)
+    {
+        uint8_t byte =  pgm_read_byte_near(g_info_temp + i);
+        g_oled.print(byte);
+    }
+
+    g_oled.print((double)g_temp / 340.0 + 31.53);
+    g_oled.display();
 }
 
 void playBuzzerSound(uint8_t freq, uint8_t time)
@@ -303,33 +388,93 @@ void setup()
     pinMode(PIN_TRIG, OUTPUT);
     pinMode(PIN_ECHO, INPUT);
 
-    playBuzzerSound(50, 500);
-
-    initMotors();
-    // initOLED();
-
     Wire.begin();
     Serial.begin(115200);
+
+    initMotors();
+    playBuzzerSound(50, 500);
+
+    initOLED();
+    playBuzzerSound(50, 500);
+
+    initIMU();
+    playBuzzerSound(50, 500);
+
+    initEncoders();
+    playBuzzerSound(50, 500);
+
+    showSelfCheckingInfo();
+
+    g_robot_state = ROBOT_STARTUP;
 }
 
 void loop()
 {
-    if (Serial.available() > 0) {
-        float distance = getUltrasonicDistance();
-        Serial.print("Distance: ");
-        Serial.print(distance);
-        Serial.println("cm");
+    // if (Serial.available() > 0) {
+    //     float distance = getUltrasonicDistance();
+    //     Serial.print("Distance: ");
+    //     Serial.print(distance);
+    //     Serial.println("cm");
 
-        if (distance == 0) {
-            return ;
-        }
-        if (distance > 0 && distance <= 5) {
-            digitalWrite(PIN_LED, HIGH);
-        }
-        else
-        {
-            digitalWrite(PIN_LED, LOW);
-        }
+    //     if (distance == 0) {
+    //         return ;
+    //     }
+    //     if (distance > 0 && distance <= 5) {
+    //         digitalWrite(PIN_LED, HIGH);
+    //     }
+    //     else
+    //     {
+    //         digitalWrite(PIN_LED, LOW);
+    //     }
+    // }
+    if (g_robot_state == ROBOT_FALLDOWN) {
+        setMotorSpeed(MOTOR_A, MOTOR_STOP);
+        setMotorSpeed(MOTOR_B, MOTOR_STOP);
     }
+
+#ifdef DEBUG_PID_CYCLE
+    Serial.print("1.");
+    Serial.print(micros());
+#endif
+
+#ifdef ENABLE_SPEED_LOOP
+    calculateSpeedPID();
+#endif
+    filterIMUData();
+    calculateAnglePID();
+
+#ifdef ENABLE_SONIC
+    if (micros() - g_timer_sonic > 100000) {
+
+    }
+#endif
+
+#ifdef DEBUG_PID_CYCLE
+    Serial.print("2.");
+    Serial.print(micros());
+#endif
+
+#ifdef DEBUG_PID_CYCLE
+    Serial.print(F("V,"));
+    Serial.print(atan2(g_acc_x, g_acc_z) * RAD_TO_DEG + 180.0);
+    Serial.print(F(","));
+    Serial.print(g_gyro_y / 131.0 + 180.0);
+    Serial.print(F(","));
+    Serial.print("0");
+    Serial.print("\n");
+#endif
+
+    getSerialData();
+    analyzeSerialData();
+
+#ifdef DEBUG_PID_CYCLE
+    Serial.print("3.");
+    Serial.print(micros());
+#endif
+
+#ifdef ENABLE_SPEED_LOOP
+    calculateSpeedPID();
+#endif
+    calculateAnglePID();
 }
 
