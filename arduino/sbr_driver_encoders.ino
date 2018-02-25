@@ -1,31 +1,35 @@
 void countEncoderA(void)
 {
     if (micros() - g_timer_encoder_a > 1000) {
-        if (digitalRead(PIN_ENCODER_A_C2) == HIGH) {
+        if (digitalRead(PIN_ENCODER_A_C2) == LOW) {
             g_count_encoder_a++;
         }
-        else if (digitalRead(PIN_ENCODER_A_C2 == LOW)) {
+        else if (digitalRead(PIN_ENCODER_A_C2 == HIGH)) {
             g_count_encoder_a--;
         }
         else {
             return;
         }
         g_timer_encoder_a = micros();
-
+        g_robot_state |= STATE_EC_A_CHANGE;
     }
 }
 
 void countEncoderB(void)
 {
-    if (digitalRead(PIN_ENCODER_B_C2) == HIGH) {
-        g_count_encoder_b++;
+    if (micros() - g_timer_encoder_a > 1000) {
+        if (digitalRead(PIN_ENCODER_B_C2) == HIGH) {
+            g_count_encoder_b++;
+        }
+        else if (digitalRead(PIN_ENCODER_B_C2 == LOW)) {
+            g_count_encoder_b--;
+        }
+        else {
+            return;
+        }
     }
-    else if (digitalRead(PIN_ENCODER_B_C2 == LOW)) {
-        g_count_encoder_b--;
-    }
-    else {
-        return;
-    }
+    g_timer_encoder_b = micros();
+    g_robot_state |= STATE_EC_B_CHANGE;
 }
 
 void initEncoders(void)

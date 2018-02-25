@@ -1,7 +1,7 @@
 void initBuzzer(void)
 {
     pinMode(PIN_BUZZER, OUTPUT);
-    playBuzzerSound(80, 100);
+    playBuzzerSound(100, 1000);
 }
 
 void playBuzzerSound(uint8_t freq, uint8_t time)

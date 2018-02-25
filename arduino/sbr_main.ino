@@ -36,7 +36,7 @@ uint32_t g_timer_imu;
 static uint8_t g_iic_buffer[8];
 
 // Encoder Global Variables.
-volatile int32_t  g_count_encoder_a, g_count_encoder_b;
+volatile int32_t  g_count_encoder_a = 0, g_count_encoder_b = 0;
 volatile uint32_t g_timer_encoder_a, g_timer_encoder_b;
 
 // PID Global Variables.
@@ -71,8 +71,10 @@ double  g_p_turn = 0, g_i_turn = 0;
 double  g_turn_integral = 0, g_turn_output;
 
 // Other Global Variables.
-RobotState g_robot_state;
+uint32_t g_robot_state;
 uint32_t g_timer_sonic;
+uint8_t  g_serial_buffer[20], g_serial_count;
+float g_joy_x, g_joy_y;
 
 void setup()
 {
@@ -87,7 +89,7 @@ void setup()
 
     // showSelfCheckingInfo();
 
-    g_robot_state = ROBOT_STARTUP;
+    g_robot_state |= STATE_STARTUP;
 }
 
 void loop()

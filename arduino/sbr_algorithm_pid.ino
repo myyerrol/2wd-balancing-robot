@@ -13,7 +13,7 @@ void calculateAnglePID(void)
         g_angle_output = g_p_angle * angle_error + g_i_angle * g_angle_integral;
 
         // Calculate turn.
-        if (g_robot_state == ROBOT_TURNING) {
+        if (g_robot_state & STATE_TURNING) {
             g_turn_integral = 0;
         }
         else {
