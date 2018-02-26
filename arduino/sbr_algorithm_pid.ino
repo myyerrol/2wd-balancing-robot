@@ -24,9 +24,26 @@ void calculateAnglePID(void)
         output_a = g_angle_output;
         output_b = g_angle_output;
 
+        output_a = constrain(output_a, -255, 255);
+        output_b = constrain(output_b, -255, 255);
 
 #ifdef ENABLE_MOTOR
+        if (output_a > 0) {
+            setMotorDirection(MOTOR_A, MOTOR_FRONT);
+        }
+        else {
+            setMotorDirection(MOTOR_A, MOTOR_BACK);
+        }
 
+        if (output_b > 0) {
+            setMotorDirection(MOTOR_B, MOTOR_FRONT);
+        }
+        else {
+            setMotorDirection(MOTOR_B, MOTOR_BACK);
+        }
+
+        setMotorSpeed(MOTOR_A, output_a);
+        setMotorSpeed(MOTOR_B, output_b);
 #endif
         g_timer_angle_pid = micros();
     }

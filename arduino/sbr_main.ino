@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -14,6 +15,8 @@
 #define ENABLE_SONIC
 // Motor Enable.
 #define ENABLE_MOTOR
+// OLED Enable.
+// #define ENABLE_OLED
 // Output IMU Data.
 #define OUTPUT_IMU
 // Output Sonic Sensor Data.
@@ -22,9 +25,11 @@
 /*****************************************************************************/
 
 // OLED Global Variables.
-// Adafruit_SSD1306 g_oled(-1);
-// const uint8_t PROGMEM g_info_temp[]  = {"Temperature:"};
-// const uint8_t PROGMEM g_info_check[] = {};
+#ifdef ENABLE_OLED
+Adafruit_SSD1306 g_oled(-1);
+const PROGMEM uint8_t g_info_temp[]  = {"Temperature:"};
+const PROGMEM uint8_t g_info_check[] = {};
+#endif
 
 // IMU Global Variables.
 const uint8_t IMU_ADDRESS = 0x68;
@@ -75,6 +80,7 @@ uint32_t g_robot_state;
 uint32_t g_timer_sonic;
 uint8_t  g_serial_buffer[20], g_serial_count;
 float g_joy_x, g_joy_y;
+EEPROMStruct g_eeprom;
 
 void setup()
 {
@@ -83,11 +89,13 @@ void setup()
     initBuzzer();
     initSonic();
     initMotors();
-    // initOLED();
     initIMU();
     initEncoders();
 
-    // showSelfCheckingInfo();
+#ifdef ENABLE_OLED
+    initOLED();
+    showSelfCheckingInfo();
+#endif
 
     g_robot_state |= STATE_STARTUP;
 }

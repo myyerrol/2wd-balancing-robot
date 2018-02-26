@@ -36,15 +36,13 @@
 #define LED_ON  digitalWrite(PIN_LED, HIGH);
 #define LED_OFF digitalWrite(PIN_LED, LOW);
 
-enum MotorState
-{
+enum MotorState {
     MOTOR_FRONT,
     MOTOR_BACK,
     MOTOR_STOP
 };
 
-enum MotionState
-{
+enum MotionState {
     Motion_FRONT,
     Motion_BACK,
     Motion_LEFT,
@@ -52,11 +50,17 @@ enum MotionState
     Motion_STOP
 };
 
+typedef union EEPROMStruct {
+    uint8_t bytes[4];
+    double  angle;
+} EEPROMStruct;
+
 void analyzeSerialData(void);
 void calculateAnglePID(void);
 void calculateSpeedPID(void);
 void countEncoderA(void);
 void countEncoderB(void);
+void filterIMUData(void);
 void getSerialData(void);
 void initBuzzer(void);
 void initEncoders(void);
@@ -71,6 +75,7 @@ void setMotorDirection(uint8_t motor, MotorState state);
 void setMotorSpeed(uint8_t motor, uint8_t speed);
 void showSelfCheckingInfo(void);
 void playBuzzerSound(uint8_t freq, uint8_t time);
+void writeDataToEEPROM(void);
 uint8_t readDataFromIIC(uint8_t address, uint8_t *data, uint8_t bytes);
 uint8_t writeDataToIIC(uint8_t address, uint8_t data, bool stop_flag);
 uint8_t writeDataToIIC(uint8_t address, uint8_t *data, uint8_t length,

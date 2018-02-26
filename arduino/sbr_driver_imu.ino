@@ -49,3 +49,37 @@ void initIMU(void)
 
     g_timer_imu = micros();
 }
+
+void filterIMUData(void)
+{
+    while (readDataFromIIC(0x3B, g_iic_buffer, 14));
+    g_acc_x  = (g_iic_buffer[0]  << 8) | g_iic_buffer[1];
+    g_acc_y  = (g_iic_buffer[2]  << 8) | g_iic_buffer[3];
+    g_acc_z  = (g_iic_buffer[4]  << 8) | g_iic_buffer[5];
+    g_temp   = (g_iic_buffer[6]  << 8) | g_iic_buffer[7];
+    g_gyro_y = (g_iic_buffer[10] << 8) | g_iic_buffer[11];
+    g_gyro_z = (g_iic_buffer[12] << 8) | g_iic_buffer[13];
+
+    calculateAnglePID();
+
+    double dt = (double)(micros() - g_timer_imu) / 1000000;
+    g_timer_imu = micros();
+
+    double pitch = atan(-g_acc_x / sqrt(g_acc_y * g_acc_y + g_acc_z * g_acc_z))
+        * RAD_TO_DEG;
+    double gyro_y_rate = g_gyro_y / 131.0;
+
+    calculateAnglePID();
+
+    g_gyro_y_angle += gyro_y_rate * dt;
+    g_calc_y_angle  = 0.93 * (g_calc_y_angle + gyro_y_rate * dt) + 0.07 * pitch;
+
+    if (abs(g_calc_y_angle - g_eeprom.angle) > 15) {
+        g_robot_state |= STATE_FALLDOWN;
+    }
+
+#ifdef OUTPUT_IMU
+    Serial.print("Angle Y: ");
+    Serial.println(g_calc_y_angle);
+#endif
+}

@@ -59,16 +59,21 @@ void setMotorDirection(uint8_t motor, MotorState state)
 
 void setMotorSpeed(uint8_t motor, uint8_t speed)
 {
-    if (speed >= 0 && speed <= 100) {
-        uint8_t pwm = map(speed, 0, 100, 0, 255);
+    if (speed > 0) {
         if (motor == MOTOR_A) {
-            analogWrite(PIN_MOTOR_ENA, pwm);
+            analogWrite(PIN_MOTOR_ENA, 255 - speed);
         }
-        else {
-            analogWrite(PIN_MOTOR_ENB, pwm);
+        else if (motor == MOTOR_B) {
+            analogWrite(PIN_MOTOR_ENB, 255 - speed);
         }
     }
-    else {
-        return;
+    else if (speed < 0) {
+        if (motor == MOTOR_A) {
+            analogWrite(PIN_MOTOR_ENA, speed);
+        }
+        else if (motor == MOTOR_B) {
+            analogWrite(PIN_MOTOR_ENB, speed);
+        }
     }
+
 }
