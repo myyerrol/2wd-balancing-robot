@@ -1,9 +1,11 @@
 #include <EEPROM.h>
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+//#include <Adafruit_GFX.h>
+//#include <Adafruit_SSD1306.h>
 #include "sbr_main.h"
 
+// Encoders debug.
+#define DEBUG_ENCODERS
 // PID cycle debug, printing time information after opening.
 #define DEBUG_PID_CYCLE
 // PID parameter debug, saving dynamic memory by replacing variable values with
