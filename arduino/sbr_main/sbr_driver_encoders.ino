@@ -1,9 +1,11 @@
 void countEncoderA(void)
 {
     if (micros() - g_timer_encoder_a > 1000) {
+        // Move front.
         if (digitalRead(PIN_ENCODER_A_C2) == LOW) {
             g_count_encoder_a++;
         }
+        // Move Back.
         else if (digitalRead(PIN_ENCODER_A_C2 == HIGH)) {
             g_count_encoder_a--;
         }
@@ -15,7 +17,7 @@ void countEncoderA(void)
     }
 
 #ifdef DEBUG_ENCODERS
-    Serial.println("Encoer A: ");
+    Serial.print("Encoder a: ");
     Serial.println(g_count_encoder_a);
 #endif
 }
@@ -23,9 +25,11 @@ void countEncoderA(void)
 void countEncoderB(void)
 {
     if (micros() - g_timer_encoder_a > 1000) {
+        // Move front.
         if (digitalRead(PIN_ENCODER_B_C2) == HIGH) {
             g_count_encoder_b++;
         }
+        // Move back.
         else if (digitalRead(PIN_ENCODER_B_C2 == LOW)) {
             g_count_encoder_b--;
         }
@@ -37,7 +41,7 @@ void countEncoderB(void)
     }
 
 #ifdef DEBUG_ENCODERS
-    Serial.println("Encoer B: ");
+    Serial.print("Encoder b: ");
     Serial.println(g_count_encoder_b);
 #endif
 }
