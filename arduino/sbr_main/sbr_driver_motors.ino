@@ -96,18 +96,18 @@ void setMotorSpeed(uint8_t motor, int16_t speed)
 {
     if (speed > 0) {
         if (motor == MOTOR_A) {
-            analogWrite(PIN_MOTOR_ENA, 255 - speed);
-        }
-        else if (motor == MOTOR_B) {
-            analogWrite(PIN_MOTOR_ENB, 255 - speed);
-        }
-    }
-    else if (speed < 0) {
-        if (motor == MOTOR_A) {
             analogWrite(PIN_MOTOR_ENA, speed);
         }
         else if (motor == MOTOR_B) {
             analogWrite(PIN_MOTOR_ENB, speed);
+        }
+    }
+    else if (speed < 0) {
+        if (motor == MOTOR_A) {
+            analogWrite(PIN_MOTOR_ENA, -speed - 50);
+        }
+        else if (motor == MOTOR_B) {
+            analogWrite(PIN_MOTOR_ENB, -speed - 50);
         }
     }
 

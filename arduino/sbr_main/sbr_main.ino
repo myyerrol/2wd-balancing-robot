@@ -1,28 +1,42 @@
 #include <EEPROM.h>
 #include <Wire.h>
-//#include <Adafruit_GFX.h>
-//#include <Adafruit_SSD1306.h>
+
+#ifdef ENABLE_OLED
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#endif
+
 #include "sbr_main.h"
 
-// Encoders debug.
-#define DEBUG_ENCODERS
-// PID cycle debug, printing time information after opening.
-#define DEBUG_PID_CYCLE
-// PID parameter debug, saving dynamic memory by replacing variable values with
+// Debug encoders.
+// #define DEBUG_ENCODERS
+// Debug IMU.
+// #define DEBUG_IMU
+// Debug motor.
+// #define DEBUG_MOTORS
+// Debug PID cycle, printing time information after opening.
+// #define DEBUG_PID_CYCLE
+// Debug PID angle output.
+// #define DEBUG_PID_OUTPUT_ANGLE
+// Debug PID motor output.
+#define DEBUG_PID_OUTPUT_MOTOR
+// Debug PID parameter, saving dynamic memory by replacing variable values with
 // macros after closing.
 #define DEBUG_PID_PARAMETER
-// Speed Loop Enable.
-#define ENABLE_SPEED_LOOP
-// Sonic Sensor Enable.
-#define ENABLE_SONIC
-// Motor Enable.
-#define ENABLE_MOTOR
-// OLED Enable.
+// Debug sonic sensor.
+// #define DEBUG_SONIC
+// Enable delay
+#define ENABLE_DELAY
+// Enable serial.
+// #define ENABLE_SERIAL
+// Enable speed loop.
+// #define ENABLE_SPEED_LOOP
+// Enable sonic sensor.
+// #define ENABLE_SONIC
+// Enable motor.
+#define ENABLE_MOTORS
+// Enable OLED.
 // #define ENABLE_OLED
-// Output IMU Data.
-#define OUTPUT_IMU
-// Output Sonic Sensor Data.
-#define OUTPUT_SONIC
 
 /*****************************************************************************/
 
@@ -40,7 +54,7 @@ double g_gyro_y, g_gyro_z;
 double g_calc_y_angle, g_gyro_y_angle;
 int16_t g_temp;
 uint32_t g_timer_imu;
-static uint8_t g_iic_buffer[8];
+static uint8_t g_iic_buffer[14];
 
 // Encoder Global Variables.
 volatile int32_t  g_count_encoder_a = 0, g_count_encoder_b = 0;
@@ -49,13 +63,13 @@ volatile uint32_t g_timer_encoder_a, g_timer_encoder_b;
 // PID Global Variables.
 // Angle Loop Variables.
 #ifdef DEBUG_PID_PARAMETER
-double  g_p_angle = 0, g_i_angle = 0, g_d_angle = 0;
+double  g_p_angle = 10, g_i_angle = 0, g_d_angle = 0;
 #else
 #define g_p_angle 0
 #define g_i_angle 0
 #define g_d_angle 0
 #endif
-double  g_angle_setpoint = 0, g_angle_output, g_angle_integral;
+double  g_angle_setpoint = 0.10, g_angle_output, g_angle_integral;
 uint32_t g_timer_angle_pid;
 
 // Speed Loop Variables.
@@ -78,9 +92,10 @@ double  g_p_turn = 0, g_i_turn = 0;
 double  g_turn_integral = 0, g_turn_output;
 
 // Other Global Variables.
+uint8_t  g_serial_buffer[20], g_serial_count;
+int16_t  g_motor_speed = 100;
 uint32_t g_robot_state;
 uint32_t g_timer_sonic;
-uint8_t  g_serial_buffer[20], g_serial_count;
 float g_joy_x, g_joy_y;
 EEPROMStruct g_eeprom;
 
@@ -93,6 +108,7 @@ void setup()
     initMotors();
     initIMU();
     initEncoders();
+    initEEPROM();
 
 #ifdef ENABLE_OLED
     initOLED();
@@ -104,70 +120,112 @@ void setup()
 
 void loop()
 {
-    // if (Serial.available() > 0) {
-    //     float distance = getUltrasonicDistance();
-    //     Serial.print("Distance: ");
-    //     Serial.print(distance);
-    //     Serial.println("cm");
+#ifdef DEBUG_MOTORS
+    while (Serial.available() > 0) {
+        char byte = Serial.read();
+        if (byte == 'w') {
+            setMotorDirection(MOTOR_A, MOTOR_FRONT);
+            setMotorDirection(MOTOR_B, MOTOR_FRONT);
+        }
+        else if (byte == 's') {
+            setMotorDirection(MOTOR_A, MOTOR_BACK);
+            setMotorDirection(MOTOR_B, MOTOR_BACK);
+        }
+        else if (byte == 'a') {
+            setMotorDirection(MOTOR_A, MOTOR_FRONT);
+            setMotorDirection(MOTOR_B, MOTOR_BACK);
+        }
+        else if (byte == 'd') {
+            setMotorDirection(MOTOR_A, MOTOR_BACK);
+            setMotorDirection(MOTOR_B, MOTOR_FRONT);
+        }
+        else if (byte == 'x') {
+            setMotorDirection(MOTOR_A, MOTOR_STOP);
+            setMotorDirection(MOTOR_B, MOTOR_STOP);
+        }
+        else if (byte == 'q') {
+            g_motor_speed++;
+            Serial.print("Speed: ");
+            Serial.println(g_motor_speed);
+        }
+        else if (byte == 'e') {
+            g_motor_speed--;
+            Serial.print("Speed: ");
+            Serial.println(g_motor_speed);
+        }
 
-    //     if (distance == 0) {
-    //         return ;
-    //     }
-    //     if (distance > 0 && distance <= 5) {
-    //         digitalWrite(PIN_LED, HIGH);
-    //     }
-    //     else
-    //     {
-    //         digitalWrite(PIN_LED, LOW);
-    //     }
-    // }
-//     if (g_robot_state == ROBOT_FALLDOWN) {
-//         setMotorSpeed(MOTOR_A, MOTOR_STOP);
-//         setMotorSpeed(MOTOR_B, MOTOR_STOP);
-//     }
+        setMotorSpeed(MOTOR_A, g_motor_speed);
+        setMotorSpeed(MOTOR_B, g_motor_speed);
+    }
+#endif
 
-// #ifdef DEBUG_PID_CYCLE
-//     Serial.print(" 1.");
-//     Serial.print(micros());
-// #endif
+/*****************************************************************************/
+    // Judge is falldown.
+    if (g_robot_state & STATE_FALLDOWN) {
+        setMotorSpeed(MOTOR_A, MOTOR_STOP);
+        setMotorSpeed(MOTOR_B, MOTOR_STOP);
+    }
 
-// #ifdef ENABLE_SPEED_LOOP
-//     calculateSpeedPID();
-// #endif
-//     filterIMUData();
-//     calculateAnglePID();
+#ifdef DEBUG_PID_CYCLE
+    Serial.print(" 1.");
+    Serial.print(micros());
+#endif
 
-// #ifdef ENABLE_SONIC
-//     if (micros() - g_timer_sonic > 100000) {
+/*****************************************************************************/
+// Calculate PID.
+#ifdef ENABLE_SPEED_LOOP
+    calculateSpeedPID();
+#endif
 
-//     }
-// #endif
+#ifndef DEBUG_MOTORS
+    filterIMUData();
+    calculateAnglePID();
+#endif
 
-// #ifdef DEBUG_PID_CYCLE
-//     Serial.print(" 2.");
-//     Serial.print(micros());
-// #endif
+/*****************************************************************************/
+// Get sonic sensor data.
+#ifdef ENABLE_SONIC
+    if (micros() - g_timer_sonic > 100000) {
+        runSonic();
+    }
+#endif
 
-// #ifdef DEBUG_PID_CYCLE
-//     Serial.print(F("V,"));
-//     Serial.print(atan2(g_acc_x, g_acc_z) * RAD_TO_DEG + 180.0);
-//     Serial.print(F(","));
-//     Serial.print(g_gyro_y / 131.0 + 180.0);
-//     Serial.print(F(","));
-//     Serial.print("0");
-//     Serial.print("\n");
-// #endif
+#ifdef DEBUG_PID_CYCLE
+    Serial.print(" 2.");
+    Serial.print(micros());
+#endif
 
-//     getSerialData();
-//     analyzeSerialData();
+/*****************************************************************************/
+// Print serial data.
+#ifdef DEBUG_PID_CYCLE
+    Serial.print(F("V,"));
+    Serial.print(atan2(g_acc_x, g_acc_z) * RAD_TO_DEG + 180.0);
+    Serial.print(F(","));
+    Serial.print(g_gyro_y / 131.0 + 180.0);
+    Serial.print(F(","));
+    Serial.print("0");
+    Serial.print("\n");
+#endif
 
-// #ifdef DEBUG_PID_CYCLE
-//     Serial.print(" 3.");
-//     Serial.print(micros());
-// #endif
+/*****************************************************************************/
+// Get serial data.
+#ifdef ENABLE_SERIAL
+    getSerialData();
+    analyzeSerialData();
+#endif
 
-// #ifdef ENABLE_SPEED_LOOP
-//     calculateSpeedPID();
-// #endif
-//     calculateAnglePID();
+#ifdef DEBUG_PID_CYCLE
+    Serial.print(" 3.");
+    Serial.print(micros());
+#endif
+
+/*****************************************************************************/
+// Calculate PID.
+#ifdef ENABLE_SPEED_LOOP
+    calculateSpeedPID();
+#endif
+
+#ifndef DEBUG_MOTORS
+    calculateAnglePID();
+#endif
 }

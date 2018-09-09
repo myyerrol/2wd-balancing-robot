@@ -4,13 +4,14 @@ void calculateAnglePID(void)
 
     if (micros() - g_timer_angle_pid > 10000) {
 #ifdef DEBUG_PID_CYCLE
-        Serial.print(" A.");
-        Serial.print(millis());
+        Serial.println("A: ");
+        Serial.println(millis());
 #endif
         // Calculate angle.
         double angle_error = g_calc_y_angle - g_angle_setpoint;
         g_angle_integral += angle_error;
-        g_angle_output = g_p_angle * angle_error + g_i_angle * g_angle_integral;
+        g_angle_output = g_p_angle * angle_error +
+                         g_i_angle * g_angle_integral + g_d_angle * g_gyro_y;
 
         // Calculate turn.
         if (g_robot_state & STATE_TURNING) {
@@ -21,25 +22,39 @@ void calculateAnglePID(void)
             g_turn_output = g_p_turn * g_gyro_z + g_i_turn * g_turn_integral;
         }
 
-        output_a = g_angle_output;
-        output_b = g_angle_output;
+#ifdef DEBUG_PID_OUTPUT_ANGLE
+    Serial.print("Angle o: ");
+    Serial.println(g_angle_output);
+#endif
 
-        output_a = constrain(output_a, -255, 255);
-        output_b = constrain(output_b, -255, 255);
-
-#ifdef ENABLE_MOTOR
-        if (output_a > 0) {
-            setMotorDirection(MOTOR_A, MOTOR_FRONT);
+        if (g_angle_output > 0) {
+            output_a = constrain(g_angle_output, 0, 205);
+            output_b = constrain(g_angle_output, 0, 205);
         }
         else {
+            output_a = constrain(g_angle_output, -255, -50);
+            output_b = constrain(g_angle_output, -255, -50);
+        }
+
+#ifdef DEBUG_PID_OUTPUT_MOTOR
+    Serial.print("Motor o: ");
+    Serial.println(output_a);
+#endif
+
+#ifdef ENABLE_MOTORS
+        // Move back.
+        if (output_a > 0) {
             setMotorDirection(MOTOR_A, MOTOR_BACK);
         }
-
+        else {
+            setMotorDirection(MOTOR_A, MOTOR_FRONT);
+        }
+        // Move back.
         if (output_b > 0) {
-            setMotorDirection(MOTOR_B, MOTOR_FRONT);
+            setMotorDirection(MOTOR_B, MOTOR_BACK);
         }
         else {
-            setMotorDirection(MOTOR_B, MOTOR_BACK);
+            setMotorDirection(MOTOR_B, MOTOR_FRONT);
         }
 
         setMotorSpeed(MOTOR_A, output_a);
@@ -52,9 +67,9 @@ void calculateAnglePID(void)
 void calculateSpeedPID(void)
 {
     if (micros() - g_timer_speed_pid > 50000) {
-#ifdef DEBUG_PID_PARAMETER
-        Serial.print(" S.");
-        Serial.print(millis());
+#ifdef DEBUG_PID_CYCLE
+        Serial.println("S: ");
+        Serial.println(millis());
 #endif
         double speed_error = (g_count_encoder_a + g_count_encoder_b) * 0.5 -
             g_speed_setpoint;
