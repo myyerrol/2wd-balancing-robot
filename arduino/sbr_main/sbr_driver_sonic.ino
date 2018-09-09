@@ -8,7 +8,7 @@ void runSonic(void)
 {
     float distance = getSonicData();
     g_timer_sonic  = micros();
-#ifdef OUTPUT_SONIC
+#ifdef DEBUG_SONIC
     Serial.print("Distance: ");
     Serial.print(distance);
     Serial.print("cm\n");

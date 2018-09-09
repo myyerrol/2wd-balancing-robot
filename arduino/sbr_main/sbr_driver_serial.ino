@@ -8,7 +8,7 @@ void analyzeSerialData(void)
             case 'J': {
                 g_robot_state |= STATE_REMOTE_CONTROL;
                 g_speed_setpoint = g_joy_y * 30;
-                if (g_joy_x > 0.2 || g_joy_x < -0.2) {
+                if ( g_joy_x < -0.2 || g_joy_x > 0.2) {
                     g_robot_state |= STATE_TURNING;
                     if (g_speed_setpoint > 0) {
                         g_turn_output =  g_joy_x * 15;
@@ -27,7 +27,7 @@ void analyzeSerialData(void)
                 g_robot_state |= STATE_REMOTE_CONTROL;
                 g_speed_setpoint = g_joy_x + 20;
                 g_speed_setpoint = constrain(g_speed_setpoint, -30, 30);
-                if (g_joy_y > 10 || g_joy_y < -10) {
+                if (g_joy_y < -10 || g_joy_y > 10) {
                     g_robot_state |= STATE_TURNING;
                     if (g_speed_setpoint > 0) {
                         g_turn_output =  g_joy_y * 0.3;
