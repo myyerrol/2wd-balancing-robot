@@ -4,7 +4,7 @@ void initIMU(void)
     while (readDataFromIIC(0x75, g_iic_buffer, 1));
 
     if (g_iic_buffer[0] != 0x70) {
-        Serial.print(F("Error Reading IMU Data!"));
+        Serial.print(F("Error, reading imu data failed!"));
         while (1);
     }
 
@@ -52,6 +52,10 @@ void initIMU(void)
 
 void filterIMUData(void)
 {
+#ifdef ENABLE_DELAY
+    delay(1);
+#endif
+
     while (readDataFromIIC(0x3B, g_iic_buffer, 14));
     g_acc_x  = (g_iic_buffer[0]  << 8) | g_iic_buffer[1];
     g_acc_y  = (g_iic_buffer[2]  << 8) | g_iic_buffer[3];
@@ -78,8 +82,8 @@ void filterIMUData(void)
         g_robot_state |= STATE_FALLDOWN;
     }
 
-#ifdef OUTPUT_IMU
-    Serial.print("Angle Y: ");
+#ifdef DEBUG_IMU
+    Serial.print("Angle y: ");
     Serial.println(g_calc_y_angle);
 #endif
 }

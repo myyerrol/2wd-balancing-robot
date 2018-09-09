@@ -1,5 +1,3 @@
-
-
 uint8_t writeDataToIIC(uint8_t address, uint8_t data, bool stop_flag)
 {
     return writeDataToIIC(address, &data, 1, stop_flag);
@@ -39,8 +37,7 @@ uint8_t readDataFromIIC(uint8_t address, uint8_t *data, uint8_t bytes)
 
     Wire.requestFrom(IMU_ADDRESS, bytes, (uint8_t)true);
 
-    for (uint8_t i = 0; i < bytes; i++)
-    {
+    for (uint8_t i = 0; i < bytes; i++) {
         if (Wire.available()) {
             data[i] = Wire.read();
         }
@@ -57,5 +54,6 @@ uint8_t readDataFromIIC(uint8_t address, uint8_t *data, uint8_t bytes)
             }
         }
     }
+
     return 0;
 }
