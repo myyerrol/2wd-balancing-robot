@@ -78,8 +78,11 @@ void filterIMUData(void)
     g_gyro_y_angle += gyro_y_rate * dt;
     g_calc_y_angle  = 0.93 * (g_calc_y_angle + gyro_y_rate * dt) + 0.07 * pitch;
 
-    if (abs(g_calc_y_angle - g_eeprom.angle) > 15) {
+    if (abs(g_calc_y_angle - g_eeprom.angle) > 60) {
         g_robot_state |= STATE_FALLDOWN;
+    }
+    else {
+        g_robot_state &= ~STATE_FALLDOWN;
     }
 
 #ifdef DEBUG_IMU
