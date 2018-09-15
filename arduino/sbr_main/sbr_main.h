@@ -72,7 +72,6 @@ void initOLED(void);
 void initSerial(void);
 void initSonic(void);
 void runSonic(void);
-void setMotor(uint8_t motor, int16_t speed);
 void setMotorDirection(uint8_t motor, MotorState state);
 void setMotorSpeed(uint8_t motor, int16_t speed);
 void showSelfCheckingInfo(void);

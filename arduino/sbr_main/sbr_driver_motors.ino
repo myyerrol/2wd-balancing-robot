@@ -11,41 +11,6 @@ void initMotors(void)
     setMotorDirection(MOTOR_B, MOTOR_STOP);
 }
 
-void setMotor(uint8_t motor, int16_t speed)
-{
-    if (motor == MOTOR_A) {
-        // Move front.
-        if (speed > 0) {
-            digitalWrite(PIN_MOTOR_IN1, HIGH);
-            digitalWrite(PIN_MOTOR_IN2, LOW);
-            analogWrite(PIN_MOTOR_ENA, 255 - speed);
-        }
-        // Move back.
-        else {
-            digitalWrite(PIN_MOTOR_IN1, LOW);
-            digitalWrite(PIN_MOTOR_IN2, HIGH);
-            analogWrite(PIN_MOTOR_ENA, speed);
-        }
-    }
-    else if (motor == MOTOR_B) {
-        // Move front.
-        if (speed > 0) {
-            digitalWrite(PIN_MOTOR_IN3, LOW);
-            digitalWrite(PIN_MOTOR_IN4, HIGH);
-            analogWrite(PIN_MOTOR_ENB, 255 - speed);
-        }
-        // Move back.
-        else {
-            digitalWrite(PIN_MOTOR_IN3, HIGH);
-            digitalWrite(PIN_MOTOR_IN4, LOW);
-            analogWrite(PIN_MOTOR_ENB, speed);
-        }
-    }
-    else {
-        return;
-    }
-}
-
 void setMotorDirection(uint8_t motor, MotorState state)
 {
     if (state == MOTOR_FRONT) {
@@ -94,21 +59,12 @@ void setMotorDirection(uint8_t motor, MotorState state)
 
 void setMotorSpeed(uint8_t motor, int16_t speed)
 {
-    if (speed > 0) {
-        if (motor == MOTOR_A) {
-            analogWrite(PIN_MOTOR_ENA, speed);
-        }
-        else if (motor == MOTOR_B) {
-            analogWrite(PIN_MOTOR_ENB, speed);
-        }
-    }
-    else if (speed < 0) {
-        if (motor == MOTOR_A) {
-            analogWrite(PIN_MOTOR_ENA, -speed - 50);
-        }
-        else if (motor == MOTOR_B) {
-            analogWrite(PIN_MOTOR_ENB, -speed - 50);
-        }
-    }
+    speed = constrain(abs(speed), 0, 205);
 
+    if (motor == MOTOR_A) {
+        analogWrite(PIN_MOTOR_ENA, speed);
+    }
+    else if (motor == MOTOR_B) {
+        analogWrite(PIN_MOTOR_ENB, speed);
+    }
 }
