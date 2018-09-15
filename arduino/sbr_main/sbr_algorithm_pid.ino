@@ -27,19 +27,8 @@ void calculateAnglePID(void)
     Serial.println(g_angle_output);
 #endif
 
-        if (g_angle_output > 0) {
-            output_a = constrain(g_angle_output, 0, 205);
-            output_b = constrain(g_angle_output, 0, 205);
-        }
-        else {
-            output_a = constrain(g_angle_output, -255, -50);
-            output_b = constrain(g_angle_output, -255, -50);
-        }
-
-#ifdef DEBUG_PID_OUTPUT_MOTOR
-    Serial.print("Motor o: ");
-    Serial.println(output_a);
-#endif
+        output_a = g_angle_output;
+        output_b = g_angle_output;
 
 #ifdef ENABLE_MOTORS
         // Move back.
