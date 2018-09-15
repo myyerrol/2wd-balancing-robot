@@ -17,9 +17,7 @@
 // Debug PID cycle, printing time information after opening.
 // #define DEBUG_PID_CYCLE
 // Debug PID angle output.
-// #define DEBUG_PID_OUTPUT_ANGLE
-// Debug PID motor output.
-#define DEBUG_PID_OUTPUT_MOTOR
+#define DEBUG_PID_OUTPUT_ANGLE
 // Debug PID parameter, saving dynamic memory by replacing variable values with
 // macros after closing.
 #define DEBUG_PID_PARAMETER
@@ -63,7 +61,7 @@ volatile uint32_t g_timer_encoder_a, g_timer_encoder_b;
 // PID Global Variables.
 // Angle Loop Variables.
 #ifdef DEBUG_PID_PARAMETER
-double  g_p_angle = 10, g_i_angle = 0, g_d_angle = 0;
+double  g_p_angle = 15, g_i_angle = 0, g_d_angle = 0;
 #else
 #define g_p_angle 0
 #define g_i_angle 0
@@ -103,7 +101,7 @@ void setup()
 {
     initSerial();
     initLED();
-    initBuzzer();
+//    initBuzzer();
     initSonic();
     initMotors();
     initIMU();
