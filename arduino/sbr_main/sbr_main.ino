@@ -165,7 +165,7 @@ void loop()
     }
 
 #ifdef DEBUG_PID_CYCLE
-    Serial.print(" 1.");
+    Serial.print("1.");
     Serial.print(micros());
 #endif
 
@@ -189,7 +189,7 @@ void loop()
 #endif
 
 #ifdef DEBUG_PID_CYCLE
-    Serial.print(" 2.");
+    Serial.print("2.");
     Serial.print(micros());
 #endif
 
@@ -213,7 +213,7 @@ void loop()
 #endif
 
 #ifdef DEBUG_PID_CYCLE
-    Serial.print(" 3.");
+    Serial.print("3.");
     Serial.print(micros());
 #endif
 
