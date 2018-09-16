@@ -1,36 +1,43 @@
 void initIMU(void)
 {
     // Read "WHO_AM_I" Register.
-    while (readDataFromIIC(0x75, g_iic_buffer, 1));
+    while (readDataFromIIC(REG_WHO_AM_I, g_iic_buffer, 1));
 
     if (g_iic_buffer[0] != 0x70) {
-        Serial.print(F("Error, reading imu data failed!"));
         while (1);
     }
 
-    // Reset device, this resets all internal registers to their default values.
-    while (writeDataToIIC(0x6B, 0x80, true));
+    // Reset the internal registers and restores the default settings.
+    while (writeDataToIIC(REG_PWR_MGMT_1, 0x80, true));
+    delay(100);
 
-    do {
-        while (readDataFromIIC(0x6B, g_iic_buffer, 1));
-    } while (g_iic_buffer[0] & 0x80);
+    while (writeDataToIIC(REG_SIGNAL_PATH_RESET, 0x07, true));
+    delay(100);
 
-    delay(5);
+    // Auto selects the best available clock source – PLL if ready, else use
+    // the Internal oscillator.
+    while (writeDataToIIC(REG_PWR_MGMT_1, 0x01, true));
+    // Enable Accelerometer and Gyroscope.
+    while (writeDataToIIC(REG_PWR_MGMT_2, 0x00, true));
 
-    // PLL with X axis gyroscope reference.
-    while (writeDataToIIC(0x6B, 0x01, true));
-
-    // Set the sample rate to 1000Hz - 8kHz/(7+1) = 1000Hz
-    g_iic_buffer[0] = 7;
-    // Disable FSYNC and set 260 Hz Acc filtering, 256 Hz Gyro filtering,
-    // 8 KHz sampling.
-    g_iic_buffer[1] = 0x00;
+    // REG_SMPLRT_DIV
+    // Set the sample rate to 1000Hz: 1kHz/(1+0) = 1000Hz
+    g_iic_buffer[0] = 0x00;
+    // REG_CONFIG
+    // Set FIFO MODE to 0, disable FSYNC and set Gyroscope filtering(184Hz
+    // Bandwidth, 2.9ms Delay, 1kHz Fs).
+    g_iic_buffer[1] = 0x01;
+    // REG_GYRO_CONFIG
     // Set Gyroscope Full Scale Range to ±250deg/s.
     g_iic_buffer[2] = 0x00;
+    // REG_ACCEL_CONFIG
     // Set Accelerometer Full Scale Range to ±2g.
     g_iic_buffer[3] = 0x00;
+    // REG_ACCEL_CONFIG_2
+    // Set Accelerometer filtering(460Hz Bandwidth, 1.94ms Delay, 1kHz Fs);
+    g_iic_buffer[4] = 0x00;
     // Write to all four registers at once.
-    while (writeDataToIIC(0x19, g_iic_buffer, 4, true));
+    while (writeDataToIIC(REG_SMPLRT_DIV, g_iic_buffer, 5, true));
 
     // Wait for the sensor to get ready.
     delay(100);
