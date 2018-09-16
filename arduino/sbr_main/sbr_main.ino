@@ -61,7 +61,7 @@ volatile uint32_t g_timer_encoder_a, g_timer_encoder_b;
 // PID Global Variables.
 // Angle Loop Variables.
 #ifdef DEBUG_PID_PARAMETER
-double  g_p_angle = 15, g_i_angle = 0, g_d_angle = 0;
+double  g_p_angle = 12, g_i_angle = 0, g_d_angle = 0;
 #else
 #define g_p_angle 0
 #define g_i_angle 0

@@ -1,37 +1,46 @@
 #ifndef SBR_MAIN_H
 #define SBR_MAIN_H
 
-#define PIN_LED              13
-#define PIN_BUZZER           A0
-#define PIN_ECHO             A1
-#define PIN_TRIG             A2
-#define PIN_IIC_SCL          A5
-#define PIN_IIC_SDA          A4
-#define PIN_SPI_MOSI         11
-#define PIN_SPI_MISO         12
-#define PIN_RXD              0
-#define PIN_TXD              1
-#define PIN_ENCODER_A_C1     2
-#define PIN_ENCODER_A_C2     4
-#define PIN_ENCODER_B_C1     3
-#define PIN_ENCODER_B_C2     A3
-#define PIN_MOTOR_IN1        5
-#define PIN_MOTOR_IN2        6
-#define PIN_MOTOR_IN3        7
-#define PIN_MOTOR_IN4        8
-#define PIN_MOTOR_ENA        9
-#define PIN_MOTOR_ENB        10
-#define MOTOR_A              0
-#define MOTOR_B              1
-#define TIMEOUT_SONIC        3000
-#define TIMEOUT_IIC          1000
-#define STATE_STARTUP        0x0001
-#define STATE_TURNING        0x0002
-#define STATE_FALLDOWN       0x0004
-#define STATE_EC_A_CHANGE    0x0008
-#define STATE_EC_B_CHANGE    0x0010
-#define STATE_SERIAL_END     0x0020
-#define STATE_REMOTE_CONTROL 0x0040
+#define PIN_LED               13
+#define PIN_BUZZER            A0
+#define PIN_ECHO              A1
+#define PIN_TRIG              A2
+#define PIN_IIC_SCL           A5
+#define PIN_IIC_SDA           A4
+#define PIN_SPI_MOSI          11
+#define PIN_SPI_MISO          12
+#define PIN_RXD               0
+#define PIN_TXD               1
+#define PIN_ENCODER_A_C1      2
+#define PIN_ENCODER_A_C2      4
+#define PIN_ENCODER_B_C1      3
+#define PIN_ENCODER_B_C2      A3
+#define PIN_MOTOR_IN1         5
+#define PIN_MOTOR_IN2         6
+#define PIN_MOTOR_IN3         7
+#define PIN_MOTOR_IN4         8
+#define PIN_MOTOR_ENA         9
+#define PIN_MOTOR_ENB         10
+#define MOTOR_A               0
+#define MOTOR_B               1
+#define TIMEOUT_SONIC         3000
+#define TIMEOUT_IIC           1000
+#define STATE_STARTUP         0x0001
+#define STATE_TURNING         0x0002
+#define STATE_FALLDOWN        0x0004
+#define STATE_EC_A_CHANGE     0x0008
+#define STATE_EC_B_CHANGE     0x0010
+#define STATE_SERIAL_END      0x0020
+#define STATE_REMOTE_CONTROL  0x0040
+#define REG_WHO_AM_I          0x75
+#define REG_PWR_MGMT_1        0x6B
+#define REG_PWR_MGMT_2        0x6C
+#define REG_SIGNAL_PATH_RESET 0x68
+#define REG_SMPLRT_DIV        0x19
+#define REG_CONFIG            0x1A
+#define REG_GYRO_CONFIG       0x1B
+#define REG_ACCEL_CONFIG      0x1C
+#define REG_ACCEL_CONFIG_2    0x1D
 
 #define LED_ON  digitalWrite(PIN_LED, HIGH);
 #define LED_OFF digitalWrite(PIN_LED, LOW);
