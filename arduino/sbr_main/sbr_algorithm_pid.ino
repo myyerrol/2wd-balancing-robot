@@ -2,7 +2,7 @@ void calculateAnglePID(void)
 {
     double output_a, output_b;
 
-    if (micros() - g_timer_angle_pid > 10000) {
+    if (micros() - g_timer_angle_pid > 1000) {
 #ifdef DEBUG_PID_CYCLE
         Serial.println("A: ");
         Serial.println(millis());
