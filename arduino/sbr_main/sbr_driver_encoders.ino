@@ -1,11 +1,10 @@
-void countEncoderA(void)
-{
+void countEncoderA(void) {
     if (micros() - g_timer_encoder_a > 1000) {
-        // Move front.
+        // A车轮向前转动
         if (digitalRead(PIN_ENCODER_A_C2) == LOW) {
             g_count_encoder_a++;
         }
-        // Move Back.
+        // A车轮向后转动
         else if (digitalRead(PIN_ENCODER_A_C2 == HIGH)) {
             g_count_encoder_a--;
         }
@@ -22,14 +21,13 @@ void countEncoderA(void)
 #endif
 }
 
-void countEncoderB(void)
-{
-    if (micros() - g_timer_encoder_a > 1000) {
-        // Move front.
+void countEncoderB(void) {
+    if (micros() - g_timer_encoder_b > 1000) {
+        // B车轮向前转动
         if (digitalRead(PIN_ENCODER_B_C2) == HIGH) {
             g_count_encoder_b++;
         }
-        // Move back.
+         // B车轮向后转动
         else if (digitalRead(PIN_ENCODER_B_C2 == LOW)) {
             g_count_encoder_b--;
         }
