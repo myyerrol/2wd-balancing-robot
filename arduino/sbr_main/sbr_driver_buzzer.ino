@@ -359,7 +359,7 @@ void playBuzzerAlert(uint8_t num) {
 }
 
 void playBuzzerMusic(void) {
-    for(uint8_t i = 0; i < sizeof(tune) / sizeof(tune[0]); i++) {
+    for (uint8_t i = 0; i < sizeof(tune) / sizeof(tune[0]); i++) {
         tone(PIN_BUZZER, tune[i]);
         delay(speed * durt[i]);
         noTone(PIN_BUZZER);
