@@ -1,24 +1,24 @@
-void initSonic(void)
-{
+void initSonic(void) {
     pinMode(PIN_TRIG, OUTPUT);
     pinMode(PIN_ECHO, INPUT);
 }
 
-void runSonic(void)
-{
+void runSonic(void) {
     float distance = getSonicData();
     g_timer_sonic  = micros();
+
 #ifdef DEBUG_SONIC
     Serial.print("Distance: ");
     Serial.print(distance);
     Serial.print("cm\n");
 #endif
+
     if (!(g_robot_state & STATE_REMOTE_CONTROL)) {
-        if (distance > 10 && distance < 15) {
+        if (distance > 10 && distance <= 15) {
             g_speed_setpoint = 30;
             LED_ON;
         }
-        else if (distance > 0 && distance < 8) {
+        else if (distance > 0 && distance <= 10) {
             g_speed_setpoint = -30;
             LED_ON;
         }
@@ -31,8 +31,7 @@ void runSonic(void)
     calculateAnglePID();
 }
 
-float getSonicData(void)
-{
+float getSonicData(void) {
     float duration = 0.0;
     float distance = 0.0;
 

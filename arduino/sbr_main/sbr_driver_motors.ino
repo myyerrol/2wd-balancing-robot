@@ -59,9 +59,9 @@ void setMotorSpeed(uint8_t motor, int16_t speed) {
     speed = constrain(abs(speed), 0, 255);
 
     if (motor == MOTOR_A) {
-        analogWrite(PIN_MOTOR_ENA, num);
+        analogWrite(PIN_MOTOR_ENA, speed);
     }
     else if (motor == MOTOR_B) {
-        analogWrite(PIN_MOTOR_ENB, num);
+        analogWrite(PIN_MOTOR_ENB, speed);
     }
 }
