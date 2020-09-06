@@ -13,26 +13,27 @@
 // Debug IMU.
 // #define DEBUG_IMU
 // Debug motor.
-// #define DEBUG_MOTORS
+#define DEBUG_MOTORS
 // Debug PID cycle, printing time information after opening.
 // #define DEBUG_PID_CYCLE
 // Debug PID angle output.
-#define DEBUG_PID_OUTPUT_ANGLE
+// #define DEBUG_PID_ANGLE_OUTPUT
 // Debug PID parameter, saving dynamic memory by replacing variable values with
 // macros after closing.
 #define DEBUG_PID_PARAMETER
 // Debug sonic sensor.
 // #define DEBUG_SONIC
+
 // Enable delay
 #define ENABLE_DELAY
 // Enable serial.
-// #define ENABLE_SERIAL
+#define ENABLE_SERIAL
 // Enable speed loop.
 // #define ENABLE_SPEED_LOOP
 // Enable sonic sensor.
 // #define ENABLE_SONIC
 // Enable motor.
-#define ENABLE_MOTORS
+// #define ENABLE_MOTORS
 // Enable OLED.
 // #define ENABLE_OLED
 
@@ -61,13 +62,13 @@ volatile uint32_t g_timer_encoder_a, g_timer_encoder_b;
 // PID Global Variables.
 // Angle Loop Variables.
 #ifdef DEBUG_PID_PARAMETER
-double  g_p_angle = 12, g_i_angle = 0, g_d_angle = 0;
+double  g_p_angle = 15, g_i_angle = 0, g_d_angle = 0;
 #else
 #define g_p_angle 0
 #define g_i_angle 0
 #define g_d_angle 0
 #endif
-double  g_angle_setpoint = 0.10, g_angle_output, g_angle_integral;
+double  g_angle_setpoint = -1.0, g_angle_output, g_angle_integral;
 uint32_t g_timer_angle_pid;
 
 // Speed Loop Variables.
@@ -97,11 +98,10 @@ uint32_t g_timer_sonic;
 float g_joy_x, g_joy_y;
 EEPROMStruct g_eeprom;
 
-void setup()
-{
+void setup() {
     initSerial();
     initLED();
-//    initBuzzer();
+    initBuzzer();
     initSonic();
     initMotors();
     initIMU();
@@ -119,54 +119,24 @@ void setup()
 void loop()
 {
 #ifdef DEBUG_MOTORS
-    while (Serial.available() > 0) {
-        char byte = Serial.read();
-        if (byte == 'w') {
-            setMotorDirection(MOTOR_A, MOTOR_FRONT);
-            setMotorDirection(MOTOR_B, MOTOR_FRONT);
-        }
-        else if (byte == 's') {
-            setMotorDirection(MOTOR_A, MOTOR_BACK);
-            setMotorDirection(MOTOR_B, MOTOR_BACK);
-        }
-        else if (byte == 'a') {
-            setMotorDirection(MOTOR_A, MOTOR_FRONT);
-            setMotorDirection(MOTOR_B, MOTOR_BACK);
-        }
-        else if (byte == 'd') {
-            setMotorDirection(MOTOR_A, MOTOR_BACK);
-            setMotorDirection(MOTOR_B, MOTOR_FRONT);
-        }
-        else if (byte == 'x') {
-            setMotorDirection(MOTOR_A, MOTOR_STOP);
-            setMotorDirection(MOTOR_B, MOTOR_STOP);
-        }
-        else if (byte == 'q') {
-            g_motor_speed++;
-            Serial.print("Speed: ");
-            Serial.println(g_motor_speed);
-        }
-        else if (byte == 'e') {
-            g_motor_speed--;
-            Serial.print("Speed: ");
-            Serial.println(g_motor_speed);
-        }
-
-        setMotorSpeed(MOTOR_A, g_motor_speed);
-        setMotorSpeed(MOTOR_B, g_motor_speed);
-    }
+    testMotors();
 #endif
+
+//    while (Serial.available() > 0) {
+//        char ch = char(Serial.read());
+//        Serial.print(ch);
+//    }
 
 /*****************************************************************************/
     // Judge is falldown.
     if (g_robot_state & STATE_FALLDOWN) {
-        setMotorSpeed(MOTOR_A, MOTOR_STOP);
-        setMotorSpeed(MOTOR_B, MOTOR_STOP);
+        setMotorDirection(MOTOR_A, MOTOR_STOP);
+        setMotorDirection(MOTOR_B, MOTOR_STOP);
     }
 
 #ifdef DEBUG_PID_CYCLE
-    Serial.print("1.");
-    Serial.print(micros());
+    Serial.print("Time 1: ");
+    Serial.print(micros() + "us");
 #endif
 
 /*****************************************************************************/
@@ -189,8 +159,8 @@ void loop()
 #endif
 
 #ifdef DEBUG_PID_CYCLE
-    Serial.print("2.");
-    Serial.print(micros());
+    Serial.print("Time 2: ");
+    Serial.print(micros() + "us");
 #endif
 
 /*****************************************************************************/
@@ -213,8 +183,8 @@ void loop()
 #endif
 
 #ifdef DEBUG_PID_CYCLE
-    Serial.print("3.");
-    Serial.print(micros());
+    Serial.print("Time 3: ");
+    Serial.print(micros() + "us");
 #endif
 
 /*****************************************************************************/

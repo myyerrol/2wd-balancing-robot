@@ -1,5 +1,4 @@
-void analyzeSerialData(void)
-{
+void analyzeSerialData(void) {
     if (g_robot_state & STATE_SERIAL_END) {
         strtok(g_serial_buffer, ",");
         g_joy_x = atof(strtok(NULL, ","));
@@ -57,23 +56,21 @@ void analyzeSerialData(void)
     }
 }
 
-void initSerial(void)
-{
+void initSerial(void) {
     Wire.begin();
     Serial.begin(115200);
 }
 
-void getSerialData(void)
-{
+void getSerialData(void) {
     while (Serial.available() > 0) {
-        char byte = char(Serial.read());
-        if (byte == ';') {
-            g_serial_buffer[g_serial_count] = byte;
+        char ch = Serial.read();
+        if (ch == ';') {
+            g_serial_buffer[g_serial_count] = ch;
             g_serial_count = 0;
             g_robot_state |= STATE_SERIAL_END;
         }
         else {
-            g_serial_buffer[g_serial_count] = byte;
+            g_serial_buffer[g_serial_count] = ch;
             g_serial_count++;
         }
     }
