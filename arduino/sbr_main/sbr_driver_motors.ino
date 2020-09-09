@@ -68,7 +68,7 @@ void setMotorSpeed(uint8_t motor, int16_t speed) {
 
 void testMotors(void) {
     while (Serial.available() > 0) {
-        char ch = Serial.read();
+        char ch = char(Serial.read());
         if (ch == 'w') {
             setMotorDirection(MOTOR_A, MOTOR_FRONT);
             setMotorDirection(MOTOR_B, MOTOR_FRONT);
