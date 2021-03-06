@@ -63,11 +63,7 @@ void initSerial(void) {
 
 void getSerialData(void) {
     while (Serial.available() > 0) {
-<<<<<<< HEAD
-        char ch = char(Serial.read());
-=======
         char ch = Serial.read();
->>>>>>> 9986ba7eb39c51c01595d9ec6a7024f36a63cda7
         if (ch == ';') {
             g_serial_buffer[g_serial_count] = ch;
             g_serial_count = 0;
