@@ -113,7 +113,6 @@ uint32_t g_timer_sonic;
 float g_joy_x, g_joy_y;
 EEPROMStruct g_eeprom;
 
-<<<<<<< HEAD
 
 #define MUSIC_RYD
 
@@ -303,9 +302,6 @@ int g_buzzer_speed = 450;
 
 void setup()
 {
-=======
-void setup() {
->>>>>>> 9986ba7eb39c51c01595d9ec6a7024f36a63cda7
     initSerial();
     initLED();
     initBuzzer();
@@ -326,7 +322,6 @@ void setup() {
 void loop()
 {
 #ifdef DEBUG_MOTORS
-<<<<<<< HEAD
     if (Serial.available() > 0) {
         char ch = Serial.read();
         Serial.print("command: ");
@@ -365,9 +360,6 @@ void loop()
         setMotorSpeed(MOTOR_A, g_motor_speed);
         setMotorSpeed(MOTOR_B, g_motor_speed);
     }
-=======
-    testMotors();
->>>>>>> 9986ba7eb39c51c01595d9ec6a7024f36a63cda7
 #endif
 
 //    while (Serial.available() > 0) {
