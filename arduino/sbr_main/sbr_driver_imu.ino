@@ -57,7 +57,7 @@ void initIMU(void) {
 
 void filterIMUData(void) {
 #ifdef ENABLE_DELAY
-    delay(1);
+    delay(10);
 #endif
 
     // 获取传感器的加速度、温度和陀螺仪数值

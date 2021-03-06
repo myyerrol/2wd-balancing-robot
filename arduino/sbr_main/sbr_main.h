@@ -241,13 +241,18 @@ void initMotors(void);
 void initOLED(void);
 void initSerial(void);
 void initSonic(void);
+void playBuzzerSound(uint8_t freq, uint8_t time);
 void runSonic(void);
 void setMotorDirection(uint8_t motor, MotorState state);
 void setMotorSpeed(uint8_t motor, int16_t speed);
 void showSelfCheckingInfo(void);
+<<<<<<< HEAD
 void playBuzzerAlert(uint8_t num);
 void playBuzzerSound(uint8_t freq, uint8_t time);
 void playBuzzerMusic(void);
+=======
+void testMotors(void);
+>>>>>>> 9986ba7eb39c51c01595d9ec6a7024f36a63cda7
 void writeDataToEEPROM(void);
 uint8_t readDataFromIIC(uint8_t address, uint8_t *data, uint8_t bytes);
 uint8_t writeDataToIIC(uint8_t address, uint8_t data, bool stop_flag);

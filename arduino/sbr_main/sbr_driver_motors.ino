@@ -65,3 +65,43 @@ void setMotorSpeed(uint8_t motor, int16_t speed) {
         analogWrite(PIN_MOTOR_ENB, speed);
     }
 }
+
+void testMotors(void) {
+    while (Serial.available() > 0) {
+        char ch = char(Serial.read());
+        if (ch == 'w') {
+            setMotorDirection(MOTOR_A, MOTOR_FRONT);
+            setMotorDirection(MOTOR_B, MOTOR_FRONT);
+        }
+        else if (ch == 's') {
+            setMotorDirection(MOTOR_A, MOTOR_BACK);
+            setMotorDirection(MOTOR_B, MOTOR_BACK);
+        }
+        else if (ch == 'a') {
+            setMotorDirection(MOTOR_A, MOTOR_FRONT);
+            setMotorDirection(MOTOR_B, MOTOR_BACK);
+        }
+        else if (ch == 'd') {
+            setMotorDirection(MOTOR_A, MOTOR_BACK);
+            setMotorDirection(MOTOR_B, MOTOR_FRONT);
+        }
+        else if (ch == 'x') {
+            setMotorDirection(MOTOR_A, MOTOR_STOP);
+            setMotorDirection(MOTOR_B, MOTOR_STOP);
+        }
+        else if (ch == 'q') {
+            g_motor_speed++;
+            Serial.print("Speed: ");
+            Serial.println(g_motor_speed);
+        }
+        else if (ch == 'e') {
+            g_motor_speed--;
+            Serial.print("Speed: ");
+            Serial.println(g_motor_speed);
+        }
+
+        setMotorSpeed(MOTOR_A, g_motor_speed);
+        setMotorSpeed(MOTOR_B, g_motor_speed);
+    }
+}
+

@@ -1,11 +1,10 @@
-void calculateAnglePID(void)
-{
+void calculateAnglePID(void) {
     double output_a, output_b;
 
-    if (micros() - g_timer_angle_pid > 1000) {
+    if (micros() - g_timer_angle_pid > 10000) {
 #ifdef DEBUG_PID_CYCLE
-        Serial.println("A: ");
-        Serial.println(millis());
+        Serial.println("Time A: ");
+        Serial.println(micros() + "us");
 #endif
         // Calculate angle.
         double angle_error = g_calc_y_angle - g_angle_setpoint;
@@ -22,7 +21,7 @@ void calculateAnglePID(void)
             g_turn_output = g_p_turn * g_gyro_z + g_i_turn * g_turn_integral;
         }
 
-#ifdef DEBUG_PID_OUTPUT_ANGLE
+#ifdef DEBUG_PID_ANGLE_OUTPUT
     Serial.print("Angle o: ");
     Serial.println(g_angle_output);
 #endif
@@ -53,12 +52,11 @@ void calculateAnglePID(void)
     }
 }
 
-void calculateSpeedPID(void)
-{
+void calculateSpeedPID(void) {
     if (micros() - g_timer_speed_pid > 50000) {
 #ifdef DEBUG_PID_CYCLE
-        Serial.println("S: ");
-        Serial.println(millis());
+        Serial.println("Time S: ");
+        Serial.println(micros() + "us");
 #endif
         double speed_error = (g_count_encoder_a + g_count_encoder_b) * 0.5 -
             g_speed_setpoint;
