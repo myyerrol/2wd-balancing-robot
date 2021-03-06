@@ -14,11 +14,7 @@
 // Debug PID cycle, printing time information after opening.
 // #define DEBUG_PID_CYCLE
 // Debug PID angle output.
-<<<<<<< HEAD
-// #define DEBUG_PID_OUTPUT_ANGLE
-=======
 // #define DEBUG_PID_ANGLE_OUTPUT
->>>>>>> 9986ba7eb39c51c01595d9ec6a7024f36a63cda7
 // Debug PID parameter, saving dynamic memory by replacing variable values with
 // macros after closing.
 // #define DEBUG_PID_PARAMETER
