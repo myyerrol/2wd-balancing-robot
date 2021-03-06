@@ -2,10 +2,17 @@
 void initOLED(void) {
     g_oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     g_oled.clearDisplay();
-    g_oled.setTextSize(2);
-    g_oled.setTextColor(WHITE);
-    g_oled.setCursor(0, 0);
-    g_oled.print("SBR");
+    // g_oled.setTextSize(2);
+    // g_oled.setTextColor(WHITE);
+    // g_oled.setCursor(0, 0);
+    // g_oled.print("SBR");
+    // g_oled.display();
+
+    g_oled.drawBitmap((g_oled.width()  - OLED_LOGO_WIDTH ) / 2,
+                      (g_oled.height() - OLED_LOGO_HEIGHT) / 2,
+                       g_logo_bmp,
+                       OLED_LOGO_WIDTH,
+                       OLED_LOGO_HEIGHT, 1);
     g_oled.display();
 }
 

@@ -66,14 +66,14 @@ void initSerial(void)
 void getSerialData(void)
 {
     while (Serial.available() > 0) {
-        char byte = char(Serial.read());
-        if (byte == ';') {
-            g_serial_buffer[g_serial_count] = byte;
+        char ch = char(Serial.read());
+        if (ch == ';') {
+            g_serial_buffer[g_serial_count] = ch;
             g_serial_count = 0;
             g_robot_state |= STATE_SERIAL_END;
         }
         else {
-            g_serial_buffer[g_serial_count] = byte;
+            g_serial_buffer[g_serial_count] = ch;
             g_serial_count++;
         }
     }
