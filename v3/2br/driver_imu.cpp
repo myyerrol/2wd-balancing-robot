@@ -3,7 +3,7 @@
 MPU6050 g_imu(Wire);
 
 void initIMU() {
-    Wire.begin(PIN_IMU_SDA, PIN_IMU_SCL);
+    Wire.begin(IMU_PIN_SDA, IMU_PIN_SCL);
     g_imu.begin();
     g_imu.calcGyroOffsets(true);
 }
