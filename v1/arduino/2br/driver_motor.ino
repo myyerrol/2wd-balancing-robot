@@ -104,4 +104,3 @@ void testMotor(void) {
         setMotorSpeed(MOTOR_B, g_motor_speed);
     }
 }
-
