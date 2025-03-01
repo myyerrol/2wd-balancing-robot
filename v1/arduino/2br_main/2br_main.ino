@@ -33,6 +33,8 @@
 // #define ENABLE_MOTORS
 // Enable OLED.
 #define ENABLE_OLED
+// Enable music
+#define MUSIC_RYD
 
 /*****************************************************************************/
 
@@ -77,231 +79,73 @@ volatile uint32_t g_timer_encoder_a, g_timer_encoder_b;
 // PID Global Variables.
 // Angle Loop Variables.
 #ifdef DEBUG_PID_PARAMETER
-double  g_p_angle = 15, g_i_angle = 0, g_d_angle = 0;
+    double  g_p_angle = 15, g_i_angle = 0, g_d_angle = 0;
 #else
-#define g_p_angle 0
-#define g_i_angle 0
-#define g_d_angle 0
+    #define g_p_angle 0
+    #define g_i_angle 0
+    #define g_d_angle 0
 #endif
 double  g_angle_setpoint = -1.0, g_angle_output, g_angle_integral;
 uint32_t g_timer_angle_pid;
 
 // Speed Loop Variables.
 #ifdef DEBUG_PID_PARAMETER
-double  g_p_speed = 0, g_i_speed = 0;
+    double  g_p_speed = 0, g_i_speed = 0;
 #else
-#define g_p_speed 0
-#define g_i_speed 0
+    #define g_p_speed 0
+    #define g_i_speed 0
 #endif
 double  g_speed_setpoint = 0, g_speed_output, g_speed_integral;
 uint32_t g_timer_speed_pid;
 
 // Turning Angle Variables.
 #ifdef DEBUG_PID_PARAMETER
-double  g_p_turn = 0, g_i_turn = 0;
+    double g_p_turn = 0, g_i_turn = 0;
 #else
-#define g_p_turn 0
-#define g_i_turn 0
+    #define g_p_turn 0
+    #define g_i_turn 0
 #endif
-double  g_turn_integral = 0, g_turn_output;
+double g_turn_integral = 0, g_turn_output;
 
 // Other Global Variables.
-uint8_t  g_serial_buffer[20], g_serial_count;
+uint8_t g_serial_buffer[20], g_serial_count;
 int16_t  g_motor_speed = 100;
 uint32_t g_robot_state;
 uint32_t g_timer_sonic;
 float g_joy_x, g_joy_y;
 EEPROMStruct g_eeprom;
 
-
-#define MUSIC_RYD
-
-#ifndef MUSIC_HLH
-#ifndef MUSIC_RYD
-// 《欢乐颂》曲谱
-int g_buzzer_tune[] = {
-    NOTE_D3, NOTE_D3, NOTE_D4,  NOTE_D5,
-    NOTE_D5, NOTE_D4, NOTE_D3,  NOTE_D2,
-    NOTE_D1, NOTE_D1, NOTE_D2,  NOTE_D3,
-    NOTE_D3, NOTE_D2, NOTE_D2,
-    NOTE_D3, NOTE_D3, NOTE_D4,  NOTE_D5,
-    NOTE_D5, NOTE_D4, NOTE_D3,  NOTE_D2,
-    NOTE_D1, NOTE_D1, NOTE_D2,  NOTE_D3,
-    NOTE_D2, NOTE_D1, NOTE_D1,
-    NOTE_D2, NOTE_D2, NOTE_D3,  NOTE_D1,
-    NOTE_D2, NOTE_D3, NOTE_D4,  NOTE_D3, NOTE_D1,
-    NOTE_D2, NOTE_D3, NOTE_D4,  NOTE_D3, NOTE_D2,
-    NOTE_D1, NOTE_D2, NOTE_DL5, NOTE_0,
-    NOTE_D3, NOTE_D3, NOTE_D4,  NOTE_D5,
-    NOTE_D5, NOTE_D4, NOTE_D3,  NOTE_D4, NOTE_D2,
-    NOTE_D1, NOTE_D1, NOTE_D2,  NOTE_D3,
-    NOTE_D2, NOTE_D1, NOTE_D1
-};
-float g_buzzer_durt[] = {
-    1, 1, 1, 1,
-    1, 1, 1, 1,
-    1, 1, 1, 1,
-    1+0.5, 0.5, 1+1,
-    1, 1, 1, 1,
-    1, 1, 1, 1,
-    1, 1, 1, 1,
-    1+0.5, 0.5, 1+1,
-    1, 1, 1, 1,
-    1, 0.5, 0.5, 1, 1,
-    1, 0.5, 0.5, 1, 1,
-    1, 1, 1, 1,
-    1, 1, 1, 1,
-    1, 1, 1, 0.5, 0.5,
-    1, 1, 1, 1,
-    1+0.5, 0.5, 1+1,
-};
-int g_buzzer_speed = 500;
-#endif
-#endif
-
-#ifdef MUSIC_HLH
-// 《紅蓮華》曲谱
-int g_buzzer_tune[] = {
-    NOTE_G6, NOTE_GH1, NOTE_G7, NOTE_G5, NOTE_G5, NOTE_G6, NOTE_G5,
-
-    NOTE_0, NOTE_G2, NOTE_G1, NOTE_G1, NOTE_G2, NOTE_G4,
-    NOTE_G3, NOTE_GL6, NOTE_0, NOTE_0,
-    NOTE_0, NOTE_GL6, NOTE_G1, NOTE_G2, NOTE_G3, NOTE_G2, NOTE_G3, NOTE_G5,
-    NOTE_G6, NOTE_GH1, NOTE_G7, NOTE_G5, NOTE_G6, NOTE_G5,
-
-    NOTE_G5, NOTE_G5, NOTE_GH3, NOTE_GH2, NOTE_GH3, NOTE_GH2, NOTE_GH3, NOTE_GH4, NOTE_GH3,
-    NOTE_GH1, NOTE_0, NOTE_0, NOTE_0, NOTE_GH1,
-    NOTE_G7, NOTE_G7, NOTE_GH1, NOTE_GH2, NOTE_0, NOTE_GH1,
-    NOTE_GH2, NOTE_GH1, NOTE_G6, NOTE_GH1, NOTE_GH3, NOTE_GH2,
-
-    NOTE_G2, NOTE_G2, NOTE_G2, NOTE_G2, NOTE_G2, NOTE_G3, NOTE_GH1,
-    NOTE_GH2, NOTE_GH1, NOTE_G6, NOTE_GH1, NOTE_GH5,
-    NOTE_G2, NOTE_G2, NOTE_G1, NOTE_G2, NOTE_GL7, NOTE_GH1,
-    NOTE_GH2, NOTE_GH1, NOTE_G6, NOTE_GH1, NOTE_GH3, NOTE_GH2,
-
-    NOTE_0, NOTE_GH2, NOTE_GH3, NOTE_GH2, NOTE_GH3, NOTE_GH5, NOTE_GH3,
-    NOTE_GH2, NOTE_GH1, NOTE_GL6, NOTE_GL7, NOTE_G1, NOTE_G2, NOTE_G3, NOTE_G5, NOTE_GH1,
-    NOTE_G7, NOTE_G7, NOTE_GH1, NOTE_GH2, NOTE_0,
-    NOTE_GH1, NOTE_G7, NOTE_GH1,
-
-    NOTE_GH1, NOTE_G7, NOTE_GH1, NOTE_0, NOTE_G5,
-    NOTE_GH1, NOTE_G7, NOTE_G6, NOTE_G5,
-    NOTE_0, NOTE_G3, NOTE_G5,
-    NOTE_G6, NOTE_0, NOTE_G6, NOTE_GH1,
-
-    NOTE_GH2, NOTE_0, NOTE_GH1, NOTE_GH2,
-    NOTE_GH3, NOTE_G2, NOTE_G3, NOTE_G5, NOTE_G6, NOTE_G7, NOTE_GH1, NOTE_G7,
-    NOTE_0, NOTE_G5, NOTE_G5, NOTE_GH3,
-    NOTE_GH2, NOTE_GH3, NOTE_GH5, NOTE_GH3, NOTE_GH2, NOTE_GH3, NOTE_GH3, NOTE_0, NOTE_GH1,
-
-    NOTE_GH2, NOTE_GH3, NOTE_GH5, NOTE_GH3, NOTE_GH2, NOTE_GH3, NOTE_GH3, NOTE_0, NOTE_GL5,
-    NOTE_GL5, NOTE_G1, NOTE_G1, NOTE_GL5, NOTE_GL5, NOTE_G1, NOTE_G2, NOTE_G1,
-    NOTE_G5, NOTE_G4, NOTE_G3, NOTE_G2, NOTE_G1,
-    NOTE_G1, NOTE_0, NOTE_GH1, NOTE_GH2, NOTE_GH3, NOTE_GH2,
-
-    NOTE_0, NOTE_G5, NOTE_GH2, NOTE_GH3, NOTE_GH5, NOTE_GH3,
-    NOTE_GL6, NOTE_GL5, NOTE_GL6, NOTE_GL5, NOTE_G6, NOTE_G6, NOTE_G6, NOTE_G6,
-    NOTE_GL3, NOTE_GL2, NOTE_G5, NOTE_G5, NOTE_GH3,
-    NOTE_GH2, NOTE_GH3, NOTE_GH5, NOTE_GH3, NOTE_GH2, NOTE_GH3, NOTE_GH3, NOTE_0, NOTE_GH1, NOTE_GH1,
-
-    NOTE_GH2, NOTE_GH3, NOTE_GH5, NOTE_GH3, NOTE_GH2, NOTE_GH3, NOTE_GH1, NOTE_0, NOTE_GH1,
-    NOTE_GH1, NOTE_GH2, NOTE_GH3, NOTE_GH3, NOTE_0, NOTE_GH7,
-    NOTE_GH5, NOTE_GH3, NOTE_GH2, NOTE_GH2, NOTE_GH1,
-
-    NOTE_GH1, NOTE_0, NOTE_GH1, NOTE_GH2, NOTE_GH3, NOTE_GH2,
-    NOTE_0, NOTE_0, NOTE_GH2, NOTE_GH2, NOTE_GH2,
-    NOTE_GH3, NOTE_G5, NOTE_G6, NOTE_G5, NOTE_G6, NOTE_G6
-};
-float g_buzzer_durt[] = {
-    0.5+0.25, 0.25+0.5, 0.5, 0.5, 0.5, 0.5+0.25, 0.25 + 1,
-
-    1, 0.5, 0.25, 0.25, 0.5, 0.5,
-    0.5, 1+0.5, 1, 1,
-    0.5, 0.5, 0.25, 0.5, 0.25+0.5, 0.5, 0.5, 0.5,
-    0.5+0.25, 0.25+0.5, 0.5+0.5, 0.5, 0.5+0.25, 0.25+1,
-
-    0.5, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5, 0.25, 0.25+0.25,
-    0.5+0.25, 1, 1, 0.5, 0.5,
-    0.5+0.25, 0.25+0.5, 0.5, 1, 0.5, 0.5,
-    0.5+0.25, 0.25+0.5, 0.5+0.25, 0.5+0.25, 0.5+0.25, 0.25+0.5,
-
-    0.5, 0.5, 0.5, 0.25, 0.5, 0.25+0.5, 0.5,
-    0.5+0.25, 0.25+0.5, 0.5+0.5, 0.5, 1+0.5,
-    0.5, 0.5, 0.5, 0.5+0.25, 0.25+0.5, 0.5,
-    0.5+0.25, 0.25+0.5, 0.5+0.5, 0.5, 0.5+0.25, 0.25+0.5,
-
-    0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-    0.5+0.25, 0.25+0.5, 0.5+0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.5,
-    0.5+0.25, 0.25+0.5, 0.5, 1, 1,
-    0.5+0.25, 0.25+0.5, 0.5+1+1,
-
-    0.5+0.25, 0.25+0.5, 0.5+1, 0.5, 0.5,
-    0.5+0.25, 0.25+0.5, 0.5+1+0.5, 0.5+1+1,
-    0.5, 1, 0.5,
-    1+1, 0.5, 1, 0.5,
-
-    1+1, 0.5, 1, 0.5,
-    0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-    1, 1, 1, 1,
-    0.5, 0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.5, 0.5,
-
-    0.5, 0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.5, 0.5,
-    0.5, 0.25, 0.25+0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
-    1, 1, 0.5+0.25, 0.25+0.5, 0.5,
-    1, 0.5, 0.5+0.5, 0.5, 0.5, 0.5,
-
-    1, 0.5, 0.5+0.5, 0.5, 0.5, 0.5,
-    0.5+0.25, 0.25+0.5, 0.5+0.25, 0.5+0.25, 0.25, 0.25, 0.25, 0.25,
-    0.5+0.25, 0.25, 1, 1, 1,
-    0.5, 0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.5, 0.25, 0.25,
-
-    0.5, 0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.5, 0.5,
-    1, 0.5, 0.5+0.5, 0.5, 0.5, 0.5+1,
-    1, 0.5+0.25, 0.25, 0.5, 0.5,
-
-    1, 0.5, 0.5+0.5, 0.5, 0.5, 0.5,
-    1, 0.5, 0.5, 1, 1,
-    0.5+0.25, 0.25+0.5, 0.5+0.25, 0.5+0.25, 0.5, 0.5
-};
-int g_buzzer_speed = 380;
-#endif
-
 #ifdef MUSIC_RYD
-// 《Rage Your Dream》曲谱
-int g_buzzer_tune[] = {
-    NOTE_E3, NOTE_E5,
-    NOTE_E6, NOTE_E6, NOTE_EH1, NOTE_E6, NOTE_EH1,
-    NOTE_E7, NOTE_E5, NOTE_E3, NOTE_E5, NOTE_E4, NOTE_E5,
-    NOTE_E6, NOTE_E1, NOTE_E6, NOTE_E2, NOTE_E1, NOTE_E2,
+    // The score of "Range Your Dream"
+    int g_buzzer_tune[] = {
+        NOTE_E3, NOTE_E5,
+        NOTE_E6, NOTE_E6, NOTE_EH1, NOTE_E6, NOTE_EH1,
+        NOTE_E7, NOTE_E5, NOTE_E3, NOTE_E5, NOTE_E4, NOTE_E5,
+        NOTE_E6, NOTE_E1, NOTE_E6, NOTE_E2, NOTE_E1, NOTE_E2,
 
-    NOTE_E3, NOTE_E7, NOTE_E5, NOTE_E5, NOTE_E3, NOTE_E5,
-    NOTE_E6, NOTE_E6, NOTE_EH1, NOTE_E6, NOTE_EH1,
-    NOTE_E7, NOTE_E5, NOTE_E5, NOTE_E3, NOTE_E5, NOTE_E3,
-    NOTE_E4, NOTE_E4, NOTE_E5, NOTE_E5,
+        NOTE_E3, NOTE_E7, NOTE_E5, NOTE_E5, NOTE_E3, NOTE_E5,
+        NOTE_E6, NOTE_E6, NOTE_EH1, NOTE_E6, NOTE_EH1,
+        NOTE_E7, NOTE_E5, NOTE_E5, NOTE_E3, NOTE_E5, NOTE_E3,
+        NOTE_E4, NOTE_E4, NOTE_E5, NOTE_E5,
 
-    NOTE_EH1, NOTE_EH1, NOTE_EH1
-};
-float g_buzzer_durt[] = {
-    0.5, 0.5,
-    1, 0.5, 0.5, 1+0.5, 0.5,
-    1, 0.5, 0.5, 1, 0.5, 0.5,
-    1, 0.5, 0.5, 1, 0.5, 0.5,
+        NOTE_EH1, NOTE_EH1, NOTE_EH1
+    };
+    float g_buzzer_durt[] = {
+        0.5, 0.5,
+        1, 0.5, 0.5, 1+0.5, 0.5,
+        1, 0.5, 0.5, 1, 0.5, 0.5,
+        1, 0.5, 0.5, 1, 0.5, 0.5,
 
-    1, 0.5, 0.5, 1, 0.5, 0.5,
-    1, 0.5, 0.5, 1+0.5, 0.5,
-    0.5, 0.5, 0.5, 0.5, 1, 1,
-    1+0.5, 0.5, 1, 1,
-    1+0.5, 0.5, 1+1
-};
-int g_buzzer_speed = 450;
+        1, 0.5, 0.5, 1, 0.5, 0.5,
+        1, 0.5, 0.5, 1+0.5, 0.5,
+        0.5, 0.5, 0.5, 0.5, 1, 1,
+        1+0.5, 0.5, 1, 1,
+        1+0.5, 0.5, 1+1
+    };
+    int g_buzzer_speed = 450;
 #endif
 
-
-
-
-
-void setup()
-{
+void setup() {
     initSerial();
     initLED();
     initBuzzer();
@@ -309,18 +153,17 @@ void setup()
     initMotors();
     initIMU();
     initEncoders();
-//    initEEPROM();
+    initEEPROM();
 
 #ifdef ENABLE_OLED
     initOLED();
-    // showSelfCheckingInfo();
+    showSelfCheckingInfo();
 #endif
 
     g_robot_state |= STATE_STARTUP;
 }
 
-void loop()
-{
+void loop() {
 #ifdef DEBUG_MOTORS
     if (Serial.available() > 0) {
         char ch = Serial.read();
@@ -362,10 +205,10 @@ void loop()
     }
 #endif
 
-//    while (Serial.available() > 0) {
-//        char ch = char(Serial.read());
-//        Serial.print(ch);
-//    }
+   while (Serial.available() > 0) {
+       char ch = char(Serial.read());
+       Serial.print(ch);
+   }
 
 /*****************************************************************************/
     // Judge is falldown.
