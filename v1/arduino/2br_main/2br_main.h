@@ -1,11 +1,11 @@
 #ifndef HEAD_H
 #define HEAD_H
 
-// 电机定义
+// Motor
 #define MOTOR_A               0
 #define MOTOR_B               1
 
-// 蜂鸣器
+// Buzzer
 #define NOTE_0                -1
 #define NOTE_A1               441
 #define NOTE_A2               495
