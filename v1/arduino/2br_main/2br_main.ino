@@ -3,7 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#include "sbr_main.h"
+#include "2br_main.h"
 
 // Debug encoders.
 // #define DEBUG_ENCODERS

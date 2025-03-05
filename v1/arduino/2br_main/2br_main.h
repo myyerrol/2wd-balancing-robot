@@ -1,5 +1,5 @@
-#ifndef SBR_MAIN_H
-#define SBR_MAIN_H
+#ifndef HEAD_H
+#define HEAD_H
 
 // 电机定义
 #define MOTOR_A               0
@@ -257,4 +257,4 @@ uint8_t writeDataToIIC(uint8_t address, uint8_t *data, uint8_t length,
                        bool stop_flag);
 float getSonicData(void);
 
-#endif // SBR_MAIN_H
+#endif
