@@ -1,4 +1,4 @@
-void initMotors(void) {
+void initMotor(void) {
     pinMode(PIN_MOTOR_IN1, OUTPUT);
     pinMode(PIN_MOTOR_IN2, OUTPUT);
     pinMode(PIN_MOTOR_IN3, OUTPUT);
@@ -66,7 +66,7 @@ void setMotorSpeed(uint8_t motor, int16_t speed) {
     }
 }
 
-void testMotors(void) {
+void testMotor(void) {
     while (Serial.available() > 0) {
         char ch = char(Serial.read());
         if (ch == 'w') {

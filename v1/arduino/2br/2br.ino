@@ -150,9 +150,9 @@ void setup() {
     initLED();
     initBuzzer();
     initSonic();
-    initMotors();
+    initMotor();
     initIMU();
-    initEncoders();
+    initEncoder();
     initEEPROM();
 
 #ifdef ENABLE_OLED

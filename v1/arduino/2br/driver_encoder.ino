@@ -44,7 +44,7 @@ void countEncoderB(void) {
 #endif
 }
 
-void initEncoders(void)
+void initEncoder(void)
 {
     pinMode(PIN_ENCODER_A_C1, INPUT);
     pinMode(PIN_ENCODER_A_C2, INPUT);
