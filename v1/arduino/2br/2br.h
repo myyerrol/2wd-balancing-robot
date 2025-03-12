@@ -1,5 +1,5 @@
-#ifndef HEAD_H
-#define HEAD_H
+#ifndef HEAD
+#define HEAD
 
 // Motor
 #define MOTOR_A               0

@@ -1,3 +1,4 @@
+#include "2br.hpp"
 #include "driver_motor.hpp"
 
 void initMotor() {
@@ -34,27 +35,12 @@ void setMotorDirAndSpeed(uint8_t motor, float pwm) {
 }
 
 void testMotor() {
-    setMotorDirAndSpeed(MOTOR_L, 1024);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_L, 0);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_L, -1024);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_L, 0);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_L, 512);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_L, 0);
+    int speed_arr[] = {1024, 0, -1024, 0, 512, 0};
 
-    setMotorDirAndSpeed(MOTOR_R, 1024);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_R, 0);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_R, -1024);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_R, 0);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_R, 512);
-    delay(1000);
-    setMotorDirAndSpeed(MOTOR_R, 0);
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < ARR_LEN(speed_arr); j++) {
+            setMotorDirAndSpeed(i, speed_arr[j]);
+            delay(1000);
+        }
+    }
 }
