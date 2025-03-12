@@ -10,12 +10,12 @@ void initMotor() {
 void setMotorDirAndSpeed(uint8_t motor, float pwm) {
     if (motor == MOTOR_L) {
         if (pwm < 0) {
-            ledcWrite(PIN_MOTOR_L1, -pwm);
-            ledcWrite(PIN_MOTOR_L2, 0);
+            ledcWrite(PIN_MOTOR_L1, 0);
+            ledcWrite(PIN_MOTOR_L2, -pwm);
         }
         else {
-            ledcWrite(PIN_MOTOR_L1, 0);
-            ledcWrite(PIN_MOTOR_L2, pwm);
+            ledcWrite(PIN_MOTOR_L1, pwm);
+            ledcWrite(PIN_MOTOR_L2, 0);
         }
     }
     else if (motor == MOTOR_R) {
@@ -38,7 +38,23 @@ void testMotor() {
     delay(1000);
     setMotorDirAndSpeed(MOTOR_L, 0);
     delay(1000);
+    setMotorDirAndSpeed(MOTOR_L, -1024);
+    delay(1000);
+    setMotorDirAndSpeed(MOTOR_L, 0);
+    delay(1000);
+    setMotorDirAndSpeed(MOTOR_L, 512);
+    delay(1000);
+    setMotorDirAndSpeed(MOTOR_L, 0);
+
     setMotorDirAndSpeed(MOTOR_R, 1024);
     delay(1000);
-    setMotorDirAndSpeed(MOTOR_R, 1024);
+    setMotorDirAndSpeed(MOTOR_R, 0);
+    delay(1000);
+    setMotorDirAndSpeed(MOTOR_R, -1024);
+    delay(1000);
+    setMotorDirAndSpeed(MOTOR_R, 0);
+    delay(1000);
+    setMotorDirAndSpeed(MOTOR_R, 512);
+    delay(1000);
+    setMotorDirAndSpeed(MOTOR_R, 0);
 }
