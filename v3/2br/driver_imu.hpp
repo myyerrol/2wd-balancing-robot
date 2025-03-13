@@ -3,8 +3,13 @@
 
 #include <Arduino.h>
 #include <MPU6050_tockn.h>
+#include "2br.hpp"
 
-void mpu6050_init();//mpu6050初始化
-void mpu6050_get_angel(double* getAngel,char Axis); //获取角度，参数例如'X'
+#define PIN_IMU_SDA 13
+#define PIN_IMU_SCL 12
+
+void initIMU();
+void getIMUAngle(float *p_angle_x, float *p_angle_y, float *p_angle_z);
+void testIMU();
 
 #endif

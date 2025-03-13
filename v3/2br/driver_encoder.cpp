@@ -55,13 +55,14 @@ void initEncoder() {
     g_encoder_l_cnt = 0;
 }
 
-
 void readEncoder(int* p_encoder_l, int* p_encoder_r) {
     *p_encoder_l = g_encoder_l_cnt;
     *p_encoder_r = g_encoder_r_cnt;
 
-    // g_encoder_r_cnt = 0;
-    // g_encoder_l_cnt = 0;
+#ifndef DEBUG_ENCODER
+    g_encoder_r_cnt = 0;
+    g_encoder_l_cnt = 0;
+#endif
 }
 
 void testEncoder() {

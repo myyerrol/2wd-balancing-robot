@@ -5,7 +5,8 @@
 void setup() {
     Serial.begin(9600);
     // initMotor();
-    initEncoder();
+    // initEncoder();
+    initIMU();
 }
 
 void loop() {
@@ -25,5 +26,6 @@ void loop() {
 
 
     // testMotor();
-    testEncoder();
+    // testEncoder();
+    testIMU();
 }

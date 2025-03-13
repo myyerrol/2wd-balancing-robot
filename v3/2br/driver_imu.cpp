@@ -1,45 +1,33 @@
 #include "driver_imu.hpp"
 
-/**mpu6050.cpp + mpu6050.h
- * 功能：模块初始化，直接读取mpu6050角度
- * 说明：基于MPU6050_tockn库，仅进行了简单封装
- *
- */
+MPU6050 g_imu(Wire);
 
-
-MPU6050 mpu6050(Wire);
-
-/******************** mpu6050初始化 ***************************/
-/**
-  * 函数功能: mpu6050初始化
-  * 输入参数: 无
-  * 返 回 值: 无
-  * 说    明: 初始化时需要静止3s左右，矫正零点
-  */
-void mpu6050_init()//mpu6050初始化
-{
-  Wire.begin(13,12);// (sda,scl)Set I2C frequency to 400kHz
-  mpu6050.begin();
-  mpu6050.calcGyroOffsets(true);
+void initIMU() {
+    Wire.begin(PIN_IMU_SDA, PIN_IMU_SCL);
+    g_imu.begin();
+    g_imu.calcGyroOffsets(true);
 }
 
+void getIMUAngle(float *p_angle_x, float *p_angle_y, float *p_angle_z) {
+    g_imu.update();
+    *p_angle_x = g_imu.getAngleX();
+    *p_angle_y = g_imu.getAngleY();
+    *p_angle_z = g_imu.getAngleZ();
+}
 
+void testIMU() {
+    float t_angle_x;
+    float t_angle_y;
+    float t_angle_z;
 
-/******************** mpu6050获取角度值 ***************************/
-/**
-  * 函数功能: mpu6050获取角度值
-  * 输入参数: 角度数值的变量指针，方向（X,Y,Z）
-  * 返 回 值: 无
-  * 说    明: 此函数用于更新mpu6050并且获取数值
-  */
-void mpu6050_get_angel(double* getAngel,char Axis)
-{
-  mpu6050.update();
-  switch(Axis)
-  {
-    case 'X': *getAngel=mpu6050.getAngleX();break;
-    case 'Y': *getAngel=mpu6050.getAngleY();break;
-    case 'Z': *getAngel=mpu6050.getAngleZ();break;
-    default:break;
-  }
+    getIMUAngle(&t_angle_x, &t_angle_y, &t_angle_z);
+    Serial.print("AngleX: ");
+    Serial.print(t_angle_x);
+    Serial.print("\t");
+    Serial.print("AngleY: ");
+    Serial.print(t_angle_y);
+    Serial.print("\t");
+    Serial.print("AngleZ: ");
+    Serial.print(t_angle_z);
+    Serial.print("\n");
 }
