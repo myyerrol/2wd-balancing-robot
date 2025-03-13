@@ -2,6 +2,7 @@
 #define DRIVER_MOTOR
 
 #include <Arduino.h>
+#include "2br.hpp"
 
 #define PIN_MOTOR_L1 0
 #define PIN_MOTOR_L2 1
@@ -15,7 +16,7 @@
 #define MOTOR_R 1
 
 void initMotor();
-void setMotorDirAndSpeed(uint8_t motor, float pwm);
+void setMotorDirAndSpeed(int motor, float pwm);
 void testMotor();
 
 #endif

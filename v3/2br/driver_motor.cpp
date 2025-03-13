@@ -1,4 +1,3 @@
-#include "2br.hpp"
 #include "driver_motor.hpp"
 
 void initMotor() {
@@ -8,7 +7,8 @@ void initMotor() {
     ledcAttach(PIN_MOTOR_R2, LEDC_FREQ_1000HZ, LEDC_RESO_10BITS);
 }
 
-void setMotorDirAndSpeed(uint8_t motor, float pwm) {
+void setMotorDirAndSpeed(int motor, float pwm) {
+    pwm = (int)pwm;
     if (motor == MOTOR_L) {
         if (pwm < 0) {
             ledcWrite(PIN_MOTOR_L1, 0);
