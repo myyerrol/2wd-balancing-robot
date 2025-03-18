@@ -2,6 +2,7 @@
 #include "driver_encoder.hpp"
 #include "driver_imu.hpp"
 #include "driver_ble.hpp"
+#include "driver_wifi.hpp"
 
 void setup() {
     Serial.begin(9600);
@@ -9,6 +10,7 @@ void setup() {
     initEncoder();
     initIMU();
     initBLE();
+    initWIFI();
 }
 
 void loop() {
@@ -23,5 +25,8 @@ void loop() {
 #endif
 #ifdef DEBUG_BLE
     testBLE();
+#endif
+#ifdef DEBUG_WIFI
+    testWIFI();
 #endif
 }
