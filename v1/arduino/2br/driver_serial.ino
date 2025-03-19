@@ -1,8 +1,8 @@
 void analyzeSerialData(void) {
     if (g_robot_state & STATE_SERIAL_END) {
-        strtok(g_serial_buffer, ",");
-        g_joy_x = atof(strtok(NULL, ","));
-        g_joy_y = atof(strtok(NULL, ";"));
+        strtok((char *)g_serial_buffer, ",");
+        g_joy_x = atof(strtok(NULL, (char *)","));
+        g_joy_y = atof(strtok(NULL, (char *)";"));
         switch (g_serial_buffer[1]) {
             case 'J': {
                 g_robot_state |= STATE_REMOTE_CONTROL;

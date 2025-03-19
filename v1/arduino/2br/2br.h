@@ -167,8 +167,6 @@
 #define PIN_TRIG              A2
 #define PIN_IIC_SCL           A5
 #define PIN_IIC_SDA           A4
-#define PIN_SPI_MOSI          11
-#define PIN_SPI_MISO          12
 #define PIN_RXD               0
 #define PIN_TXD               1
 #define PIN_ENCODER_A_C1      2
@@ -241,13 +239,12 @@ void initMotor(void);
 void initOLED(void);
 void initSerial(void);
 void initSonic(void);
-void playBuzzerSound(uint8_t freq, uint8_t time);
 void runSonic(void);
 void setMotorDirection(uint8_t motor, MotorState state);
 void setMotorSpeed(uint8_t motor, int16_t speed);
 void showSelfCheckingInfo(void);
 void playBuzzerAlert(uint8_t num);
-void playBuzzerSound(uint8_t freq, uint8_t time);
+void playBuzzerSound(uint16_t freq, uint16_t time);
 void playBuzzerMusic(void);
 void testMotor(void);
 void writeDataToEEPROM(void);

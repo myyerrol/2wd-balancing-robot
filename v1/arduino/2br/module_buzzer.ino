@@ -29,7 +29,7 @@ void playBuzzerMusic(void) {
     }
 }
 
-void playBuzzerSound(uint8_t freq, uint8_t time) {
+void playBuzzerSound(uint16_t freq, uint16_t time) {
     tone(PIN_BUZZER, freq);
     delay(time);
     noTone(PIN_BUZZER);
