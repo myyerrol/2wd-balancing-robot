@@ -1,32 +1,32 @@
 #include "driver_motor.hpp"
 
 void initMotor() {
-    ledcAttach(MOTOR_PIN_L1, MOTOR_FREQ_1000HZ, LEDC_RESO_10BITS);
-    ledcAttach(MOTOR_PIN_L2, MOTOR_FREQ_1000HZ, LEDC_RESO_10BITS);
-    ledcAttach(MOTOR_PIN_R1, MOTOR_FREQ_1000HZ, LEDC_RESO_10BITS);
-    ledcAttach(MOTOR_PIN_R2, MOTOR_FREQ_1000HZ, LEDC_RESO_10BITS);
+    ledcAttach(MOTOR_PIN_L1, MOTOR_FREQ_1000HZ, MOTOR_FREQ_10BITS);
+    ledcAttach(MOTOR_PIN_L2, MOTOR_FREQ_1000HZ, MOTOR_FREQ_10BITS);
+    ledcAttach(MOTOR_PIN_R1, MOTOR_FREQ_1000HZ, MOTOR_FREQ_10BITS);
+    ledcAttach(MOTOR_PIN_R2, MOTOR_FREQ_1000HZ, MOTOR_FREQ_10BITS);
 }
 
-void setMotorDirAndSpeed(int motor, float pwm) {
-    pwm = (int)pwm;
-    if (motor == MOTOR_L) {
-        if (pwm < 0) {
+void setMotorDirAndSpeed(int p_motor, float p_pwm) {
+    p_pwm = (int)p_pwm;
+    if (p_motor == MOTOR_L) {
+        if (p_pwm < 0) {
             ledcWrite(MOTOR_PIN_L1, 0);
-            ledcWrite(MOTOR_PIN_L2, -pwm);
+            ledcWrite(MOTOR_PIN_L2, -p_pwm);
         }
         else {
-            ledcWrite(MOTOR_PIN_L1, pwm);
+            ledcWrite(MOTOR_PIN_L1, p_pwm);
             ledcWrite(MOTOR_PIN_L2, 0);
         }
     }
-    else if (motor == MOTOR_R) {
-        if (pwm < 0) {
-            ledcWrite(MOTOR_PIN_R1, -pwm);
+    else if (p_motor == MOTOR_R) {
+        if (p_pwm < 0) {
+            ledcWrite(MOTOR_PIN_R1, -p_pwm);
             ledcWrite(MOTOR_PIN_R2, 0);
         }
         else {
             ledcWrite(MOTOR_PIN_R1, 0);
-            ledcWrite(MOTOR_PIN_R2, pwm);
+            ledcWrite(MOTOR_PIN_R2, p_pwm);
         }
     }
     else {

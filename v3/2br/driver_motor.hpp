@@ -10,13 +10,13 @@
 #define MOTOR_PIN_R2 3
 
 #define MOTOR_FREQ_1000HZ 1000
-#define LEDC_RESO_10BITS 10
+#define MOTOR_FREQ_10BITS 10
 
 #define MOTOR_L 0
 #define MOTOR_R 1
 
 void initMotor();
-void setMotorDirAndSpeed(int motor, float pwm);
+void setMotorDirAndSpeed(int p_motor, float p_pwm);
 void testMotor();
 
 #endif

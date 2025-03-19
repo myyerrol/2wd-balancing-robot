@@ -10,7 +10,7 @@
 #include "2br.hpp"
 
 void initEncoder();
-void readEncoder();
+void readEncoder(int *p_encoder_l, int *p_encoder_r);
 void testEncoder();
 
 #endif
