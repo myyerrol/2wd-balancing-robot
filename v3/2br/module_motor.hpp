@@ -1,5 +1,5 @@
-#ifndef DRIVER_MOTOR
-#define DRIVER_MOTOR
+#ifndef MODULE_MOTOR
+#define MODULE_MOTOR
 
 #include <Arduino.h>
 #include "2br.hpp"

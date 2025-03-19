@@ -1,15 +1,16 @@
-#include "driver_motor.hpp"
-#include "driver_encoder.hpp"
-#include "driver_imu.hpp"
+#include "driver_serial.hpp"
 #include "driver_ble.hpp"
 #include "driver_wifi.hpp"
+#include "module_motor.hpp"
+#include "module_encoder.hpp"
+#include "module_imu.hpp"
 
 void setup() {
-    Serial.begin(9600);
-    initMotor();
-    initEncoder();
-    initIMU();
-    initBLE();
+    initSerial();
+    // initMotor();
+    // initEncoder();
+    // initIMU();
+    // initBLE();
     initWIFI();
 }
 

@@ -6,5 +6,7 @@
 
 void initWIFI();
 void testWIFI();
+void sendToWIFI();
+void recvFrWIFI();
 
 #endif

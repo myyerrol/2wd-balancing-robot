@@ -4,7 +4,7 @@ volatile int g_encoder_l_cnt = 0;
 volatile int g_encoder_r_cnt = 0;
 
 static void handleEncoderLPhaseA() {
-    if (digitalRead(PIN_ENCODER_L2) == HIGH) {
+    if (digitalRead(ENCODER_PIN_L2) == HIGH) {
         g_encoder_l_cnt++;
     }
     else {
@@ -13,7 +13,7 @@ static void handleEncoderLPhaseA() {
 }
 
 static void handleEncoderLPhaseB() {
-    if (digitalRead(PIN_ENCODER_L1) == LOW) {
+    if (digitalRead(ENCODER_PIN_L1) == LOW) {
         g_encoder_l_cnt++;
     }
     else {
@@ -22,7 +22,7 @@ static void handleEncoderLPhaseB() {
 }
 
 static void handleEncoderRPhaseA() {
-    if (digitalRead(PIN_ENCODER_R2) == LOW) {
+    if (digitalRead(ENCODER_PIN_R2) == LOW) {
         g_encoder_r_cnt++;
     }
     else {
@@ -31,7 +31,7 @@ static void handleEncoderRPhaseA() {
 }
 
 static void handleEncoderRPhaseB() {
-    if (digitalRead(PIN_ENCODER_R1) == HIGH) {
+    if (digitalRead(ENCODER_PIN_R1) == HIGH) {
         g_encoder_r_cnt++;
     }
     else {
@@ -40,15 +40,15 @@ static void handleEncoderRPhaseB() {
 }
 
 void initEncoder() {
-    pinMode(PIN_ENCODER_L1, INPUT);
-    pinMode(PIN_ENCODER_L2, INPUT);
-    pinMode(PIN_ENCODER_R1, INPUT);
-    pinMode(PIN_ENCODER_R2, INPUT);
+    pinMode(ENCODER_PIN_L1, INPUT);
+    pinMode(ENCODER_PIN_L2, INPUT);
+    pinMode(ENCODER_PIN_R1, INPUT);
+    pinMode(ENCODER_PIN_R2, INPUT);
 
-    attachInterrupt(PIN_ENCODER_L1, handleEncoderLPhaseA, RISING);
-    attachInterrupt(PIN_ENCODER_L2, handleEncoderLPhaseB, RISING);
-    attachInterrupt(PIN_ENCODER_R1, handleEncoderRPhaseA, RISING);
-    attachInterrupt(PIN_ENCODER_R2, handleEncoderRPhaseB, RISING);
+    attachInterrupt(ENCODER_PIN_L1, handleEncoderLPhaseA, RISING);
+    attachInterrupt(ENCODER_PIN_L2, handleEncoderLPhaseB, RISING);
+    attachInterrupt(ENCODER_PIN_R1, handleEncoderRPhaseA, RISING);
+    attachInterrupt(ENCODER_PIN_R2, handleEncoderRPhaseB, RISING);
     interrupts();
 
     g_encoder_r_cnt = 0;

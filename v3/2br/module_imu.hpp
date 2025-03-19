@@ -1,5 +1,5 @@
-#ifndef DRIVER_IMU
-#define DRIVER_IMU
+#ifndef MODULE_IMU
+#define MODULE_IMU
 
 #include <Arduino.h>
 #include <MPU6050_tockn.h>
