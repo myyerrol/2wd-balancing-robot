@@ -1,57 +1,68 @@
 #include "driver_ble.hpp"
 
-BLEServer *pServer = NULL;
-BLECharacteristic *pTxCharacteristic;
-bool deviceConnected = false;
-bool oldDeviceConnected = false;
-uint8_t txValue = 0;
+BLEServer         *g_ble_server       = NULL;
+BLECharacteristic *g_ble_cht_tx;
+bool               g_ble_dev_conn     = false;
+bool               g_ble_dev_conn_old = false;
+uint8_t            g_ble_tx_val       = 0;
+
+class MyServerCallbacks : public BLEServerCallbacks {
+    void onConnect(BLEServer *p_ble_server) {
+        g_ble_dev_conn = true;
+    };
+    void onDisconnect(BLEServer *p_ble_server) {
+        g_ble_dev_conn = false;
+    }
+};
+
+class MyCallbacks : public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic *p_ble_cht) {
+        String t_ble_tx_val = p_ble_cht->getValue();
+        if (t_ble_tx_val.length() > 0) {
+            for (int i = 0; i < t_ble_tx_val.length(); i++) {
+                Serial.print(t_ble_tx_val[i]);
+            }
+            Serial.println();
+        }
+    }
+};
 
 void initBLE() {
-    // Create the BLE Device
-    BLEDevice::init("UART Service");
+    BLEDevice::init("2BR");
 
-    // Create the BLE Server
-    pServer = BLEDevice::createServer();
-    pServer->setCallbacks(new MyServerCallbacks());
+    g_ble_server = BLEDevice::createServer();
+    g_ble_server->setCallbacks(new MyServerCallbacks());
 
-    // Create the BLE Service
-    BLEService *pService = pServer->createService(BLE_SRV_UUID);
+    BLEService *t_ble_srv = g_ble_server->createService(BLE_SRV_UUID);
+    g_ble_cht_tx = t_ble_srv->createCharacteristic(
+        BLE_CHT_UUID_TX,
+        BLECharacteristic::PROPERTY_NOTIFY);
+    g_ble_cht_tx->addDescriptor(new BLE2902());
 
-    // Create a BLE Characteristic
-    pTxCharacteristic = pService->createCharacteristic(BLE_CHT_UUID_TX, BLECharacteristic::PROPERTY_NOTIFY);
+    BLECharacteristic *t_ble_cht_rx = t_ble_srv->createCharacteristic(
+        BLE_CHT_UUID_RX,
+        BLECharacteristic::PROPERTY_WRITE);
+    t_ble_cht_rx->setCallbacks(new MyCallbacks());
 
-    pTxCharacteristic->addDescriptor(new BLE2902());
+    t_ble_srv->start();
 
-    BLECharacteristic *pRxCharacteristic = pService->createCharacteristic(BLE_CHT_UUID_RX, BLECharacteristic::PROPERTY_WRITE);
-
-    pRxCharacteristic->setCallbacks(new MyCallbacks());
-
-    // Start the service
-    pService->start();
-
-    // Start advertising
-    pServer->getAdvertising()->start();
-    Serial.println("Waiting a client connection to notify...");
+    g_ble_server->getAdvertising()->start();
 }
 
 void testBLE() {
-  if (deviceConnected) {
-    pTxCharacteristic->setValue(&txValue, 1);
-    pTxCharacteristic->notify();
-    txValue++;
-    delay(10);  // bluetooth stack will go into congestion, if too many packets are sent
-  }
+    if (g_ble_dev_conn) {
+        g_ble_cht_tx->setValue(&g_ble_tx_val, 1);
+        g_ble_cht_tx->notify();
+        g_ble_tx_val++;
+        delay(10);
+    }
 
-  // disconnecting
-  if (!deviceConnected && oldDeviceConnected) {
-    delay(500);                   // give the bluetooth stack the chance to get things ready
-    pServer->startAdvertising();  // restart advertising
-    Serial.println("start advertising");
-    oldDeviceConnected = deviceConnected;
-  }
-  // connecting
-  if (deviceConnected && !oldDeviceConnected) {
-    // do stuff here on connecting
-    oldDeviceConnected = deviceConnected;
-  }
+    if (!g_ble_dev_conn && g_ble_dev_conn_old) {
+        delay(500);
+        g_ble_server->startAdvertising();
+        g_ble_dev_conn_old = g_ble_dev_conn;
+    }
+    if (g_ble_dev_conn && !g_ble_dev_conn_old) {
+        g_ble_dev_conn_old = g_ble_dev_conn;
+    }
 }
