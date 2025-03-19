@@ -1,4 +1,4 @@
-#include "driver_imu.hpp"
+#include "module_imu.hpp"
 
 MPU6050 g_imu(Wire);
 
