@@ -7,6 +7,6 @@
 // #define DEBUG_ENCODER
 // #define DEBUG_IMU
 // #define DEBUG_BLE
-#define DEBUG_WIFI
+// #define DEBUG_WIFI
 
 #endif

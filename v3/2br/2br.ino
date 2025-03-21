@@ -7,11 +7,14 @@
 
 void setup() {
     initSerial();
-    // initMotor();
-    // initEncoder();
-    // initIMU();
-    // initBLE();
+    initMotor();
+    initEncoder();
+    initIMU();
+#ifdef COMM_BLE
+    initBLE();
+#else
     initWIFI();
+#endif
 }
 
 void loop() {

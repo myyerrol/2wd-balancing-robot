@@ -6,7 +6,7 @@
 
 void initWIFI();
 void testWIFI();
-void sendToWIFI();
-void recvFrWIFI();
+void sendDataToWIFI(char *p_data);
+void recvDataFrWIFI(char *p_data);
 
 #endif
