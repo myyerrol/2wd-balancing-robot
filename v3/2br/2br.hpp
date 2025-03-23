@@ -9,4 +9,7 @@
 // #define DEBUG_BLE
 // #define DEBUG_WIFI
 
+#define COMM_BLE
+// #define COMM_WIFI
+
 #endif

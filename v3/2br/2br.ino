@@ -12,7 +12,8 @@ void setup() {
     initIMU();
 #ifdef COMM_BLE
     initBLE();
-#else
+#endif
+#ifdef COMM_WIFI
     initWIFI();
 #endif
 }
